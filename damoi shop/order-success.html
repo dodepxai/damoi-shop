@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt hàng thành công | DAMOI SHOP</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #f7f7f7; color: #333; margin: 0; padding: 0; }
+        
+        /* Header Checkout (Shared with checkout.html) */
+        .checkout-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 130px; background: #fff; border-bottom: 1px solid #eee; margin-bottom: 40px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.03);}
+        .nav-brand-logo { width: 175px; height: 80px; overflow: hidden; position: relative; display: block; flex-shrink: 0; text-decoration: none; background: transparent !important; }
+        .nav-brand-logo img { position: absolute; height: 170px; top: 40%; transform: translateY(-50%); left: -70px; mix-blend-mode: darken; pointer-events: none; max-width: none; }
+        .checkout-steps { display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 18px; color: #aaa; }
+        .checkout-step { display: flex; align-items: center; gap: 10px; }
+        .checkout-step.active { color: #1e88e5; }
+        .checkout-step-number { width: 32px; height: 32px; border-radius: 50%; background: #eee; color: #999; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600;}
+        .checkout-step.active .checkout-step-number { background: #1e88e5; color: #fff; }
+        .checkout-step-divider { width: 80px; height: 1px; background: #eee; }
+
+        .success-container { max-width: 800px; margin: 0 auto 40px auto; padding: 0 20px; }
+        
+        /* Animation Header */
+        .success-header { text-align: center; margin-bottom: 40px; }
+        .check-circle { 
+            width: 80px; height: 80px; background: #4caf50; border-radius: 50%; 
+            display: inline-flex; align-items: center; justify-content: center; 
+            color: #fff; font-size: 40px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        
+        .success-title { font-size: 26px; font-weight: 800; margin: 0 0 10px 0; color: #333; }
+        .success-subtitle { font-size: 16px; color: #666; font-weight: 500; }
+
+        /* Order Box */
+        .order-card { 
+            background: #fff; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.05); 
+            padding: 40px; animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp { 0% { transform: translateY(30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
+        .order-card-title { 
+            text-align: center; font-size: 22px; font-weight: 800; letter-spacing: 1px; 
+            margin: 0 0 30px 0; padding-bottom: 20px; border-bottom: 1px solid #eee; text-transform: uppercase;
+        }
+
+        .info-row { display: flex; align-items: flex-start; margin-bottom: 18px; font-size: 16px; line-height: 1.6; }
+        .info-label { width: 180px; color: #888; font-weight: 500; flex-shrink: 0; }
+        .info-value { color: #333; font-weight: 700; flex: 1; }
+        .info-value.order-id { color: #333; }
+        .copy-btn { margin-left: 10px; color: #888; cursor: pointer; font-size: 14px; }
+        .copy-btn:hover { color: #1e88e5; }
+        
+        .total-pay { font-size: 18px; }
+        .total-amount { color: #444; font-size: 22px; font-weight: 700; }
+        .item-count { color: #666; font-weight: 500; font-size: 14px; }
+
+        /* Buttons */
+        .actions { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 40px; }
+        .btn { 
+            padding: 20px; border-radius: 6px; font-size: 16px; font-weight: 700; 
+            text-transform: uppercase; text-decoration: none; text-align: center; transition: all 0.3s;
+            cursor: pointer;
+        }
+        .btn-outline { border: 2px solid #333; color: #333; }
+        .btn-outline:hover { background: #333; color: #fff; }
+        .btn-dark { background: #323d49; color: #fff; border: 2px solid #323d49; }
+        .btn-dark:hover { background: #000; border-color: #000; }
+
+        /* Confetti Simulation */
+        .confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+        @media (max-width: 768px) {
+            .checkout-header { padding: 20px; }
+            .checkout-steps { display: none; }
+            .order-card { padding: 20px; }
+            .info-label { width: 120px; font-size: 14px; }
+            .info-value { font-size: 14px; }
+            .total-amount { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="checkout-header">
+        <a href="index.html" class="nav-brand-logo">
+            <img src="images/logo.png" alt="DAMOI">
+        </a>
+        <div class="checkout-steps">
+            <div class="checkout-step"><div class="checkout-step-number">1</div> Giỏ hàng</div>
+            <div class="checkout-step-divider"></div>
+            <div class="checkout-step"><div class="checkout-step-number">2</div> Thanh toán</div>
+            <div class="checkout-step-divider"></div>
+            <div class="checkout-step active"><div class="checkout-step-number">3</div> Hoàn tất</div>
+        </div>
+        <div style="width: 100px;"></div> <!-- Spacer matching checkout.html logo alignment style -->
+    </header>
+
+    <div class="success-container">
+        <!-- Header -->
+        <div class="success-header">
+            <div class="check-circle"><i class="fa-solid fa-check"></i></div>
+            <h1 class="success-title">Đặt hàng thành công</h1>
+            <p class="success-subtitle">Cảm ơn bạn đã mua sắm tại DAMOI Shop.</p>
+        </div>
+
+        <!-- Main Info Card -->
+        <div class="order-card">
+            <h2 class="order-card-title">Thông tin đơn hàng</h2>
+            
+            <div class="info-row">
+                <div class="info-label">Mã đơn hàng</div>
+                <div class="info-value order-id" id="order-id">DMF123456789 <i class="fa-regular fa-copy copy-btn" title="Sao chép"></i></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Người nhận</div>
+                <div class="info-value" id="recipient-name">--</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Địa chỉ</div>
+                <div class="info-value" id="order-address">--</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Thanh toán</div>
+                <div class="info-value" id="payment-method">Thanh toán khi nhận hàng (COD)</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Tổng tiền</div>
+                <div class="info-value total-pay">
+                    <span class="total-amount" id="total-amount">0 ₫</span> 
+                    <span class="item-count" id="item-count">(0 sản phẩm)</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="#" class="btn btn-outline" onclick="handleTrackOrder(event)">Theo dõi đơn hàng</a>
+                <a href="index.html" class="btn btn-dark">Về trang chủ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Random Confetti (simple version) -->
+    <canvas id="confetti" class="confetti"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
+            if (!orderInfo) {
+                // If no data, return early
+                return;
+            }
+
+            // --- Privacy Masking Utils ---
+            const maskString = (str, visibleCount = 1) => {
+                if (!str) return '--';
+                if (str.length <= visibleCount) return str;
+                return str.substring(0, visibleCount) + '*****';
+            };
+
+            const maskAddress = (address) => {
+                if (!address) return '--';
+                // Pattern: "Street, Ward, District, City"
+                const parts = address.split(',');
+                if (parts.length < 4) return address;
+                
+                // Show only the last part (City) and remove 'Thành phố ' or 'Tỉnh '
+                let city = parts[parts.length - 1].trim();
+                city = city.replace(/^Thành phố\s+/i, '').replace(/^Tỉnh\s+/i, '');
+                return '***, ***, ***, ' + city;
+            };
+
+            // Fill Data
+            document.getElementById('order-id').innerHTML = `${orderInfo.orderId} <i class="fa-regular fa-copy copy-btn" onclick="copyId('${orderInfo.orderId}')"></i>`;
+            
+            // Fix recipient mapping: fullName is in shippingAddress
+            const recipient = orderInfo.shippingAddress?.fullName || orderInfo.customer?.name || '--';
+            document.getElementById('recipient-name').innerText = maskString(recipient);
+
+            // Fix address mapping: address is in shippingAddress
+            const address = orderInfo.shippingAddress?.address || orderInfo.customer?.address || '--';
+            document.getElementById('order-address').innerText = maskAddress(address);
+            
+            let payText = "Thanh toán khi nhận hàng (COD)";
+            if (orderInfo.paymentMethod === 'vnpay') payText = "Cổng thanh toán VNPAY";
+            if (orderInfo.paymentMethod === 'shopeepay') payText = "Ví điện tử ShopeePay";
+            document.getElementById('payment-method').innerText = payText;
+
+            const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0).replace('₫', ' ₫');
+            document.getElementById('total-amount').innerText = formatMoney(orderInfo.totalPrice);
+            
+            const totalQty = (orderInfo.orderItems || []).reduce((sum, item) => sum + (item.qty || 1), 0);
+            document.getElementById('item-count').innerText = `(${totalQty} sản phẩm)`;
+        });
+
+        function copyId(id) {
+            navigator.clipboard.writeText(id);
+            alert('Đã sao chép mã đơn hàng: ' + id);
+        }
+
+        // Simple Confetti effect
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+
+        for (let i = 0; i < 150; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 7 + 3,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                velocity: { x: (Math.random() - 0.5) * 3, y: Math.random() * 3 + 2 }
+            });
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.velocity.x;
+                p.y += p.velocity.y;
+                if (p.y > canvas.height) p.y = -10;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+            requestAnimationFrame(render);
+        }
+        render();
+
+        function handleTrackOrder(e) {
+            e.preventDefault();
+            const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
+            if (orderInfo && orderInfo.autoRegister) {
+                // Tạo session giả lập cho người dùng vừa đăng ký dựa vào SĐT
+                const userSession = {
+                    phone: orderInfo.shippingAddress?.phone || '09xxxxxxxxx',
+                    name: orderInfo.shippingAddress?.fullName || 'Khách hàng mới',
+                    tier: 'Green',
+                    points: 0
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userSession));
+            }
+            // Chuyển tới trang profile có phần đơn hàng
+            window.location.href = 'my-profile.html';
+        }
+    </script>
+</body>
+</html>
