@@ -188,17 +188,18 @@ ul {
     flex: 1;
     max-width: 600px;
     margin: 0 60px;
-    background: #111111; /* Deeper black for search box */
-    border-radius: 25px; /* Rounded pill shape */
+    background: #ffffff;
+    border-radius: 25px;
     padding: 0 20px;
-    border: 1px solid #333; /* Subtle border */
+    border: 1px solid #ddd;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .search-box:focus-within {
-    border-color: #ffffff;
-    background: #000;
+    border-color: #aaa;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .search-box input {
@@ -208,10 +209,10 @@ ul {
     outline: none;
     font-size: 14px;
     background: transparent;
-    color: #ffffff;
+    color: #000000;
 }
 .search-box i {
-    color: #ffffff; /* Gold magnifying glass */
+    color: #444444;
     margin-right: 15px;
     font-size: 16px;
 }
@@ -318,8 +319,8 @@ ul {
 }
 
 .search-box:focus-within {
-    border-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+    border-color: #aaa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .search-box input {
@@ -334,7 +335,7 @@ ul {
 }
 
 .search-box i {
-    color: #ffffff;
+    color: #444444;
     font-size: 16px;
 }
 
