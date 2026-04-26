@@ -2685,9 +2685,7 @@ footer {
     font-size: 20px;
     font-weight: 800;
     letter-spacing: 1px;
-    background: var(--gold-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #000000;
     margin: 0;
 }
 
@@ -2921,8 +2919,8 @@ footer {
 }
 
 .voucher-modal {
-    background: #1a1a1a;
-    color: #fff;
+    background: #ffffff;
+    color: #000000;
     width: 500px;
     max-width: 90%;
     border-radius: 8px;
@@ -2934,7 +2932,7 @@ footer {
 .voucher-header {
     padding: 20px;
     text-align: center;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #ddd;
     font-weight: 700;
     font-size: 18px;
     position: relative;
@@ -2992,7 +2990,7 @@ footer {
 }
 
 .voucher-item {
-    border: 1px solid #333;
+    border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
     display: flex;
@@ -3047,13 +3045,13 @@ footer {
 
 .voucher-desc {
     font-size: 13px;
-    color: #ffffff;
+    color: #666666;
     margin-bottom: 5px;
 }
 
 .voucher-code {
     font-size: 12px;
-    background: #333;
+    background: #f1f1f1;
     padding: 2px 6px;
     border-radius: 2px;
     font-weight: 600;
@@ -3090,7 +3088,7 @@ footer {
 
 .voucher-footer {
     padding: 20px;
-    border-top: 1px solid #333;
+    border-top: 1px solid #ddd;
 }
 
 .apply-voucher-btn {
