@@ -1,20 +1,20 @@
-const fs = require('fs');
+<!DOCTYPE html>
+<html lang="vi">
 
-const indexHtml = fs.readFileSync('index.html', 'utf8');
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAMOI SHOP | Mua cho đáng, xài cho lâu</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css?v=26">
 
-// Find bounds
-const headerEndIdx = indexHtml.indexOf('</header>') + '</header>'.length;
-const footerStartIdx = indexHtml.indexOf('<!-- New Premium Footer -->');
-
-if (headerEndIdx === -1 || footerStartIdx === -1) {
-  console.log('Could not find header or footer bounds in index.html');
-  process.exit(1);
-}
-
-const headPart = indexHtml.substring(0, headerEndIdx);
-const footPart = indexHtml.substring(footerStartIdx);
-
-const cssAppend = `
     <style>
         .policy-page {
             background-color: #f9f9f9;
@@ -58,39 +58,11 @@ const cssAppend = `
             color: #000;
         }
     </style>
-`;
+</head>
 
-const termsBody = `
-    <div class="policy-page">
-        <div class="container policy-container">
-            <h1 class="policy-title">Điều Kiện - Điều Khoản Kinh Doanh</h1>
-            <div class="policy-content">
-                <p><strong>CÔNG TY CỔ PHẦN DAMOI SHOP</strong> cam kết xây dựng một môi trường mua sắm trực tuyến minh bạch, uy tín và chuyên nghiệp nhất. Khi truy cập, mua sắm và trở thành Khách hàng thân thiết (KHTT) của DAMOI, quý khách vui lòng đọc kỹ các điều khoản dưới đây:</p>
-                
-                <h3>1. Chấp thuận điều khoản</h3>
-                <p>Bằng việc tham gia Chương Trình KHTT hoặc sử dụng dịch vụ trên hệ thống website DAMOI, quý khách hiểu và đồng ý với toàn bộ các chính sách được công bố công khai. Khách hàng cam kết bảo mật thông tin tài khoản của mình và không cung cấp cho bên thứ ba.</p>
+<body>
 
-                <h3>2. Quyền lợi KHTT</h3>
-                <ul>
-                    <li>Được thăng hạng và nhận ưu đãi độc quyền (Voucher sinh nhật, Giảm giá thẻ VIP).</li>
-                    <li>Tham gia các chương trình khuyến mại giành riêng cho Hội viên.</li>
-                    <li>Tra cứu lịch sử mua hàng, tích điểm qua hệ thống Website DAMOI.</li>
-                </ul>
-
-                <h3>3. Trách nhiệm của DAMOI SHOP</h3>
-                <p>DAMOI cam kết đảm bảo quyền lợi tối đa cho người tiêu dùng theo quy định của pháp luật Việt Nam. Chúng tôi có quyền sửa đổi/cập nhật chính sách KHTT vào bất kì thời điểm nào và sẽ thông báo công khai trên website.</p>
-
-                <h3>4. Xử lý gian lận</h3>
-                <p>DAMOI có quyền từ chối cung cấp dịch vụ, tước quyền hạng thành viên nếu phát hiện các hành vi gian lận trục lợi ưu đãi, sao chép hoặc tấn công hệ thống website/ứng dụng di động do DAMOI quản lý.</p>
-
-                <h3>5. Giải quyết tranh chấp</h3>
-                <p>Các điều khoản này tuân thủ các quy định hiện hành của Pháp luật Việt Nam. Mọi tranh chấp nếu có sẽ được hai bên ưu tiên xử lý bằng đàm phán thương lượng, nhằm bảo vệ tình cảm đôi bên.</p>
-            </div>
-        </div>
-    </div>
-`;
-
-const privacyBody = `
+    <div id="app-header"></div>
     <div class="policy-page">
         <div class="container policy-container">
             <h1 class="policy-title">Chính Sách Bảo Mật Thông Tin</h1>
@@ -122,11 +94,20 @@ const privacyBody = `
             </div>
         </div>
     </div>
-`;
+<!-- New Premium Footer -->
+    <div id="app-footer"></div>
 
-const headPartWithCss = headPart.replace('</head>', cssAppend + '</head>');
+    <div id="app-chat"></div>
 
-fs.writeFileSync('dieu-khoan-dich-vu.html', headPartWithCss + termsBody + footPart);
-fs.writeFileSync('chinh-sach-bao-mat.html', headPartWithCss + privacyBody + footPart);
+    <div id="app-voucher"></div>
 
-console.log('Successfully created dieu-khoan-dich-vu.html & chinh-sach-bao-mat.html');
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+
+</html>

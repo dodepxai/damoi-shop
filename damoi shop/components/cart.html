@@ -1,0 +1,42 @@
+<div class="cart-overlay" id="cart-overlay" onclick="window.closeCartDrawer()"></div>
+<div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-header">
+        <h2>GIỎ HÀNG (<span id="drawer-cart-count">0</span>)</h2>
+        <button class="cart-close-btn" onclick="window.closeCartDrawer()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <div class="cart-promo-text">
+        <i class="fa-solid fa-truck-fast"></i> <span id="promo-msg">Mua thêm <span id="promo-remaining">420.000 đ</span> để được miễn phí vận chuyển</span>
+    </div>
+
+    <div class="cart-drawer-body">
+        <div class="cart-select-all">
+            <input type="checkbox" id="select-all-cart">
+            <label for="select-all-cart">Chọn tất cả</label>
+            <span style="margin-left:auto; color:#ffffff; font-size:12px;">Đã chọn (<span id="drawer-selected-count">0</span>)</span>
+        </div>
+
+        <div class="drawer-cart-items" id="drawer-cart-items">
+            <!-- Items injected by main.js renderDrawerCart() -->
+        </div>
+
+        <div class="cart-suggestions">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 15px; margin-top: 30px;">CÓ THỂ BẠN SẼ THÍCH</h3>
+            <div id="drawer-suggestions" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                <!-- Suggestions could go here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-drawer-footer">
+        <div class="promo-code-btn" onclick="window.openVoucherModal()" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed #333; font-size: 14px; font-weight: 500; cursor: pointer;">
+            <span><i class="fa-solid fa-ticket"></i> Mã ưu đãi</span>
+            <span>Chọn hoặc nhập mã <i class="fa-solid fa-chevron-right"></i></span>
+        </div>
+        <div class="cart-subtotal" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0 20px 0; font-size: 16px; font-weight: 700;">
+            <span>TỔNG TIỀN:</span>
+            <span class="subtotal-price" id="drawer-subtotal" style="color: #d32f2f;">0 đ</span>
+        </div>
+        <button class="checkout-btn" onclick="window.location.href='/pages/checkout.html'" style="width: 100%; background: #d32f2f; color: white; font-weight: 700; padding: 15px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">THANH TOÁN</button>
+    </div>
+</div>

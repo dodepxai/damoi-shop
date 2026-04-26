@@ -1,3 +1,34 @@
+// ==========================================================================
+//   COMPONENT LOADER (Injects HTML components)
+// ==========================================================================
+async function loadHTMLComponent(id, file) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    try {
+        const res = await fetch(file);
+        if (res.ok) {
+            el.outerHTML = await res.text();
+        }
+    } catch (e) {
+        console.error('Failed to load component', file, e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load all components in parallel
+    await Promise.all([
+        loadHTMLComponent('app-header', 'components/header.html'),
+        loadHTMLComponent('app-footer', 'components/footer.html'),
+        loadHTMLComponent('app-chat', 'components/chat.html'),
+        loadHTMLComponent('app-cart', 'components/cart.html'),
+        loadHTMLComponent('app-voucher', 'components/voucher.html'),
+        loadHTMLComponent('app-auth', 'components/auth.html')
+    ]);
+    
+    // Báo hiệu đã tải xong components để script chính chạy
+    document.dispatchEvent(new Event('componentsLoaded'));
+});
+
 // Global Cart Initialization
 window.cart = [];
 let selectedVoucherCode = '';
@@ -521,7 +552,7 @@ document.addEventListener('change', function(e) {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('componentsLoaded', () => {
     // Mobile Menu Toggle
     const menuBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.querySelector('.nav-links');
@@ -576,35 +607,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const headerActions = document.querySelector('.header-actions');
         const chatAction = document.getElementById('chatAction');
         const chatWidget = document.getElementById('chat-toggle-btn');
+        const logoutActionDropdown = document.getElementById('logoutAction');
 
         if (userData && accountAction && accountText) {
-            // Thay chữ "Tài khoản" thành Tên
-            accountText.innerHTML = userData.fullName.split(' ').pop();
-            accountAction.href = "tracking.html";
-            accountAction.innerHTML = `<i class="fa-solid fa-truck-fast"></i><span id="accountText">${userData.fullName.split(' ').pop()}</span>`;
-            accountAction.style.color = "#4CAF50";
+            // Thay chữ "Tài khoản" thành Tên (Đã bỏ theo yêu cầu người dùng để giữ chữ "Tài khoản")
+            // accountText.innerHTML = userData.fullName.split(' ').pop();
+            accountAction.href = "my-profile.html";
+            accountAction.removeAttribute('onclick');
 
-            // HIỆN nút Tin nhắn trên nav và ẨN bong bóng chat bên dưới
-            if (chatAction) chatAction.style.display = 'flex';
+            // HIỆN nút Tin nhắn trên nav (trong dropdown hoặc nếu có ở ngoài thì bỏ qua vì code HTML đã xóa)
+            // Hiện logoutAction trong menu 3 chấm
+            if (logoutActionDropdown) {
+                logoutActionDropdown.style.display = 'flex';
+            }
             if (chatWidget) chatWidget.style.display = 'none';
 
-            // Xoá và tạo lại một nút Đăng xuất
-            if (!document.getElementById('btnLogout') && headerActions) {
-                const logoutBtn = document.createElement('a');
-                logoutBtn.href = "#";
-                logoutBtn.id = "btnLogout";
-                logoutBtn.className = "action-item";
-                logoutBtn.innerHTML = `<i class="fa-solid fa-right-from-bracket"></i><span>Đăng xuất</span>`;
-                headerActions.appendChild(logoutBtn);
-
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    localStorage.removeItem('damoi_user');
-                    sessionStorage.removeItem('damoi_user');
-                    alert("Đăng xuất thành công!");
-                    window.location.reload();
-                });
-            }
         } else {
             // Nếu là Khách (Guest)
             if (chatAction) chatAction.style.display = 'none';
@@ -633,7 +650,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ================= XỬ LÝ THANH TÌM KIẾM =================
-    const searchInput = document.querySelector('.search-box input');
+    const searchInput = document.getElementById('search-input') || document.querySelector('.search-box input');
+    const searchBtn = document.getElementById('search-btn') || document.querySelector('.search-box i');
+    const suggestionsBox = document.getElementById('search-suggestions');
+    
     if (searchInput) {
         // Điền lại từ khoá vào ô tìm kiếm nếu đang truy vấn
         const currentUrlParams = new URLSearchParams(window.location.search);
@@ -641,11 +661,77 @@ document.addEventListener('DOMContentLoaded', () => {
             searchInput.value = currentUrlParams.get('search');
         }
 
+        const triggerSearch = () => {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+            }
+        };
+
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                // Luôn chuyển hướng về index.html để hiển thị kết quả Search
-                window.location.href = `index.html?search=${encodeURIComponent(query)}`;
+                triggerSearch();
+            }
+        });
+
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                triggerSearch();
+            });
+        }
+
+        // --- Xử lý Gợi ý (Suggestions) ---
+        let debounceTimer;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            const query = searchInput.value.trim();
+            
+            if (query.length < 2) {
+                if (suggestionsBox) suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/api/products?search=${encodeURIComponent(query)}`);
+                    const products = await response.json();
+                    
+                    if (!suggestionsBox) return;
+
+                    if (products.length > 0) {
+                        const top5 = products.slice(0, 5);
+                        let html = top5.map(p => `
+                            <a href="product-detail.html?id=${p._id}" class="search-suggestion-item">
+                                <img src="${p.images && p.images[0] ? p.images[0] : 'images/placeholder.jpg'}" alt="${p.name}">
+                                <div class="suggestion-info">
+                                    <span class="suggestion-name">${p.name}</span>
+                                    <span class="suggestion-price">${p.price.toLocaleString('vi-VN')}đ</span>
+                                </div>
+                            </a>
+                        `).join('');
+                        
+                        html += `
+                            <div class="suggestion-footer" onclick="window.location.href='index.html?search=${encodeURIComponent(query)}'">
+                                Xem tất cả ${products.length} kết quả cho "${query}"
+                            </div>
+                        `;
+                        
+                        suggestionsBox.innerHTML = html;
+                        suggestionsBox.style.display = 'block';
+                    } else {
+                        suggestionsBox.innerHTML = '<div class="no-suggestion">Không tìm thấy sản phẩm nào</div>';
+                        suggestionsBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error("Lỗi gợi ý tìm kiếm:", err);
+                }
+            }, 300);
+        });
+
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (suggestionsBox && !e.target.closest('.search-box')) {
+                suggestionsBox.style.display = 'none';
             }
         });
     }
@@ -928,10 +1014,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 return `
                     <div class="product-card">
-                        <a href="product-detail.html?id=${product._id}" class="product-image">
-                            <img id="img-${product._id}" src="${imgSrc}" alt="${product.name}">
+                        <div class="product-image">
+                            <a href="product-detail.html?id=${product._id}">
+                                <img id="img-${product._id}" src="${imgSrc}" alt="${product.name}">
+                            </a>
                             ${badgeHtml}
-                        </a>
+                            <button class="grid-wishlist-btn ${window.isInWishlist(product._id) ? 'active' : ''}" 
+                                onclick="window.toggleWishlist(event, '${product._id}')" 
+                                title="Thêm vào yêu thích">
+                                <i class="${window.isInWishlist(product._id) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                        </div>
                         <div class="product-info">
                             ${colorThumbHtml}
                             <a href="product-detail.html?id=${product._id}"><h3 class="product-name">${product.name}</h3></a>
@@ -964,6 +1057,42 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Lỗi khi tải sản phẩm:", error);
             productGrid.innerHTML = '<p style="text-align:center; width: 100%; color: red;">Lỗi tải dữ liệu sản phẩm. Vui lòng thử lại sau.</p>';
         }
+    };
+
+    // ================== YÊU THÍCH (WISHLIST) ==================
+    window.isInWishlist = (id) => {
+        const wishlist = JSON.parse(localStorage.getItem('damoi_wishlist')) || [];
+        return wishlist.includes(id);
+    };
+
+    window.toggleWishlist = (event, id) => {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        
+        let wishlist = JSON.parse(localStorage.getItem('damoi_wishlist')) || [];
+        const index = wishlist.indexOf(id);
+        const btn = event.currentTarget;
+        const icon = btn.querySelector('i');
+
+        if (index === -1) {
+            wishlist.push(id);
+            btn.classList.add('active');
+            if (icon) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            }
+        } else {
+            wishlist.splice(index, 1);
+            btn.classList.remove('active');
+            if (icon) {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            }
+        }
+
+        localStorage.setItem('damoi_wishlist', JSON.stringify(wishlist));
     };
 
     // ================== GIỎ HÀNG (CART) ==================
@@ -1046,6 +1175,115 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 2000);
             });
         });
+    };
+
+    window.renderWishlistPage = async () => {
+        const grid = document.getElementById('wishlist-grid');
+        if (!grid) return;
+
+        let wishlist = JSON.parse(localStorage.getItem('damoi_wishlist')) || [];
+        
+        if (wishlist.length === 0) {
+            grid.innerHTML = `<div class="wishlist-empty" id="wishlist-empty-state" style="grid-column: 1 / -1;">
+                <i class="fa-regular fa-heart"></i>
+                <h2>Danh sách yêu thích đang trống</h2>
+                <p>Hãy dạo quanh cửa hàng và chọn những sản phẩm bạn yêu thích nhé!</p>
+                <a href="index.html" class="auth-btn" style="padding: 12px 40px; text-decoration: none;">Tiếp tục mua sắm</a>
+            </div>`;
+            return;
+        }
+
+        try {
+            grid.innerHTML = '<p style="text-align:center; grid-column: 1 / -1; padding: 50px;">Đang tải danh sách yêu thích...</p>';
+            
+            const response = await fetch('/api/products');
+            const allProducts = await response.json();
+            
+            const wishlistProducts = allProducts.filter(p => wishlist.includes(p._id));
+            
+            if (wishlistProducts.length === 0) {
+                 grid.innerHTML = `<div class="wishlist-empty" id="wishlist-empty-state" style="grid-column: 1 / -1;">
+                    <i class="fa-regular fa-heart"></i>
+                    <h2>Danh sách yêu thích đang trống</h2>
+                    <p>Sản phẩm yêu thích của bạn không còn tồn tại hoặc đã bị xóa!</p>
+                    <a href="index.html" class="auth-btn" style="padding: 12px 40px; text-decoration: none;">Tiếp tục mua sắm</a>
+                </div>`;
+                 return;
+            }
+
+            grid.innerHTML = wishlistProducts.map(product => {
+                const priceFmt = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
+                const oldPriceHtml = product.oldPrice ? `<span class="old-price">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</span>` : '';
+
+                let badgeHtml = '';
+                if (product.isSale && product.oldPrice) {
+                    const discount = Math.round((product.oldPrice - product.price) / product.oldPrice * 100);
+                    badgeHtml = `<span class="badge sale-badge">-${discount}%</span>`;
+                } else if (product.isNewProduct) {
+                    badgeHtml = `<span class="badge new-badge">Hàng mới</span>`;
+                }
+
+                const imgSrc = product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/400';
+                
+                let colorThumbHtml = '';
+                if (product.images && product.images.length > 0) {
+                    const tempColors = product.images.slice(0, 2);
+                    if (tempColors.length === 1) tempColors.push(tempColors[0]);
+                    
+                    colorThumbHtml = '<div class="product-colors">';
+                    tempColors.forEach((img, idx) => {
+                        colorThumbHtml += `<div class="color-thumb ${idx === 0 ? 'active' : ''}" onclick="document.getElementById('img-w-${product._id}').src='${img}'; Array.from(this.parentNode.children).forEach(c => c.classList.remove('active')); this.classList.add('active'); event.preventDefault(); event.stopPropagation();"><img src="${img}" alt="Color"></div>`;
+                    });
+                    colorThumbHtml += '</div>';
+                }
+
+                const freeshipHtml = `<div class="freeship-badge">Freeship</div>`;
+
+                return `
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="product-detail.html?id=${product._id}">
+                                <img id="img-w-${product._id}" src="${imgSrc}" alt="${product.name}">
+                            </a>
+                            ${badgeHtml}
+                            <button class="grid-wishlist-btn active" 
+                                onclick="window.toggleWishlist(event, '${product._id}'); window.renderWishlistPage();" 
+                                title="Bỏ yêu thích">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            ${colorThumbHtml}
+                            <a href="product-detail.html?id=${product._id}"><h3 class="product-name">${product.name}</h3></a>
+                            <div class="product-prices">
+                                <div class="price-left">
+                                    <span class="price">${priceFmt}</span>
+                                    ${oldPriceHtml}
+                                    ${freeshipHtml}
+                                </div>
+                                <button class="cart-icon-btn add-to-cart-btn"
+                                    data-id="${product._id}"
+                                    data-name="${product.name}"
+                                    data-price="${product.price}"
+                                    data-image="${imgSrc}"
+                                    title="Thêm vào giỏ hàng">
+                                    <div class="cart-btn-content">
+                                        <i class="fa-solid fa-bag-shopping"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (typeof bindAddToCartEvents === 'function') {
+                bindAddToCartEvents();
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải wishlist:", error);
+            grid.innerHTML = '<p style="text-align:center; width: 100%; color: red;">Lỗi tải dữ liệu. Vui lòng thử lại sau.</p>';
+        }
     };
 
     // Gọi hàm fetch khi trang vừa tải xong
@@ -1575,3 +1813,81 @@ window.closeAuthModal = function() {
     if (modal) modal.classList.remove('open');
     if (typeof window.hideMockOtpToast === 'function') window.hideMockOtpToast();
 };
+
+/* --- More Menu Logic --- */
+window.toggleMoreMenu = function(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('moreMenuDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' || dropdown.style.display === '' ? 'flex' : 'none';
+    }
+};
+
+window.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('moreMenuDropdown');
+    if (dropdown && !e.target.closest('.more-menu-trigger')) {
+        dropdown.style.display = 'none';
+    }
+});
+
+/* --- Authenticated State UI --- */
+document.addEventListener("componentsLoaded", function() {
+    const userStr = localStorage.getItem('damoi_user');
+    if (userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            const accountText = document.getElementById('accountText');
+            // if (accountText && user.fullName) {
+            //    // Hiển thị tên (chữ cái đầu)
+            //    accountText.innerText = user.fullName.split(' ').pop(); 
+            // }
+            const accountAction = document.getElementById('accountAction');
+            if (accountAction) {
+                accountAction.href = 'my-profile.html';
+                accountAction.removeAttribute('onclick');
+            }
+            const logoutAction = document.getElementById('logoutAction');
+            if (logoutAction) {
+                logoutAction.style.display = 'flex';
+            }
+        } catch (e) {
+            console.error("Parse user error:", e);
+        }
+    }
+});
+
+window.handleLogout = function() {
+    localStorage.removeItem('damoi_user');
+    window.location.reload();
+};
+
+/* --- Wishlist Interactions --- */
+window.addToWishlist = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    if (!productId) return;
+
+    const btn = document.querySelector('.image-wishlist-btn');
+    const icon = btn.querySelector('i');
+    
+    let wishlist = JSON.parse(localStorage.getItem('damoi_wishlist')) || [];
+    const index = wishlist.indexOf(productId);
+
+    if (index === -1) {
+        wishlist.push(productId);
+        if (icon) {
+            icon.classList.replace('fa-regular', 'fa-solid');
+            icon.style.color = 'var(--accent-color)';
+        }
+    } else {
+        wishlist.splice(index, 1);
+        if (icon) {
+            icon.classList.replace('fa-solid', 'fa-regular');
+            icon.style.color = '#666';
+        }
+    }
+
+    localStorage.setItem('damoi_wishlist', JSON.stringify(wishlist));
+};
+
+

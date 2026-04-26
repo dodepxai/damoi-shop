@@ -12,8 +12,8 @@
             --yellow: #fbbf24;
             --red: #f87171;
             --blue: #60a5fa;
-            --text: #e4e4f0;
-            --text-muted: #888;
+            --text: #ffffff;
+            --text-muted: #ffffff;
         }
 
         body {
@@ -44,26 +44,21 @@
             align-items: center; /* Center horizontally in sidebar */
         }
         .logo-wrapper {
-            width: 175px;
-            height: 80px;
-            overflow: hidden;
-            position: relative;
-            display: block;
-            margin: 15px 0 5px 0;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.03); /* Subtle background for the box */
+            width: 100%;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            padding: 0 10px;
         }
         .admin-logo-img {
-            position: absolute;
-            height: 170px;
-            top: 40%;
-            transform: translateY(-50%);
-            left: -70px;
-            /* Invert to make dark logo visible on dark bg and white bg vanish */
-            filter: invert(0.9) hue-rotate(180deg) brightness(1.2); 
-            pointer-events: none;
-            max-width: none;
-            mix-blend-mode: screen; /* Makes black background of inverted image transparent */
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            /* Phóng đại nhẹ để logo trông quyền lực hơn */
+            transform: scale(1.3);
+            filter: brightness(1.1); 
         }
         .sidebar-logo p { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
 

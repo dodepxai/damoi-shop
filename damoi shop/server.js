@@ -17,46 +17,26 @@ const connectDB = async () => {
         // Khởi tạo tài khoản Admin mặc định nếu chưa có
         const User = require('./models/User');
         const otplib = require('otplib');
-        const adminEmail = 'dotech204@gmail.com';
+        const adminEmail = 'damoi282930@gmail.com';
         let adminUser = await User.findOne({ email: adminEmail });
         
         if (!adminUser) {
-            await User.deleteMany({ role: 'admin' }); // Xóa hết admin bản nháp cũ
+            await User.deleteMany({ role: 'admin' }); 
             const secret = otplib.authenticator.generateSecret();
             
             adminUser = await User.create({
                 fullName: 'Quản Trị Hệ Thống',
                 email: adminEmail,
-                phone: '0000000000', // Dummy phone vì model bắt buộc
+                phone: '0000000000',
                 password: 'Dobeo24@!',
                 role: 'admin',
                 twoFactorSecret: secret
             });
-            const issuer = encodeURIComponent('DAMOI SHOP');
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=otpauth://totp/${issuer}:${adminEmail}?secret=${secret}&issuer=${issuer}`;
-
-            console.log('\n================ SSO DASHBOARD SETUP ================');
-            console.log('✅ Đã tạo tài khoản Admin SSO gốc!');
-            console.log(`🔒 Email: ${adminEmail} | Pass: Dobeo24@!`);
-            console.log(`🔑 MÃ BÍ MẬT Google Authenticator: ${secret}`);
-            console.log('📸 BẤM VÀO LINK NÀY ĐỂ HIỆN MÃ QR:');
-            console.log(qrUrl);
-            console.log('=====================================================\n');
-        } else if (!adminUser.twoFactorSecret) {
-            const secret = otplib.authenticator.generateSecret();
-            adminUser.twoFactorSecret = secret;
-            adminUser.password = 'Dobeo24@!';
-            await adminUser.save();
-            
-            const issuer = encodeURIComponent('DAMOI SHOP');
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=otpauth://totp/${issuer}:${adminEmail}?secret=${secret}&issuer=${issuer}`;
-            
-            console.log(`\n================ BỔ SUNG SSO ADMIN ================`);
-            console.log(`🔑 Đã khôi phục mã khóa 2FA cho Admin: ${secret}`);
-            console.log('📸 BẤM VÀO LINK NÀY ĐỂ HIỆN MÃ QR:');
-            console.log(qrUrl);
-            console.log('===================================================\n');
         }
+
+        // Ép buộc hiện mã QR mỗi khi khởi động (để bạn dễ dàng lấy lại nếu quên)
+        const secret = adminUser.twoFactorSecret;
+        // Thông tin Admin đã được thiết lập. (Đã ẩn để bảo mật)
     } catch (error) {
         console.error(`❌ Lỗi kết nối MongoDB: ${error.message}`);
         console.log('⚠️ Lưu ý: Nếu bạn chưa cài MongoDB trên máy, web vẫn có thể hiển thị giao diện tĩnh bình thường.');
@@ -74,11 +54,6 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Serve static files (HTML, CSS, JS ảnh của frontend)
 // Thay vì chạy file HTML bằng Live Server, từ nay Server Node.js sẽ đảm nhận việc load file HTML lên
 app.use(express.static(path.join(__dirname)));
-
-// Basic API route
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Server Node.js đang hoạt động ngon lành!' });
-});
 
 // Import và sử dụng các Routes API
 const productRoutes = require('./routes/products');
@@ -175,11 +150,27 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Các Route dành riêng cho Admin (để gõ link ngắn cho đẹp)
+app.get('/admin-login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'admin-login.html'));
+});
+
+app.get('/admin-login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'admin-login.html'));
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'admin.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'admin.html'));
+});
+
 // Khởi động server
 app.listen(PORT, () => {
     console.log(`🚀 Server đang chạy tại http://localhost:${PORT}`);
     console.log(`Truy cập frontend tại: http://localhost:${PORT}`);
-    console.log(`Kiểm tra API tại: http://localhost:${PORT}/api/test`);
 
     // Tự động mở trình duyệt (ưu tiên Chrome trên Windows)
     const { exec } = require('child_process');

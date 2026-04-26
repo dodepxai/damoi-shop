@@ -11,7 +11,7 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f7f7f7; color: #333; margin: 0; padding: 0; font-size: 17px;}
         .container { max-width: 1360px; margin: 0 auto; padding: 0 20px; }
@@ -331,8 +331,8 @@
 
     <header class="checkout-header">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-            <a href="index.html" class="nav-brand-logo">
-                <img src="images/logo.png" alt="DAMOI">
+            <a href="../index.html" class="nav-brand-logo">
+                <img src="../images/logo.png" alt="DAMOI">
             </a>
             
             <div class="checkout-steps">
@@ -352,7 +352,7 @@
                 </div>
             </div>
 
-            <a href="index.html" class="continue-shopping">TIẾP TỤC MUA SẮM <i class="fa-solid fa-arrow-rotate-left"></i></a>
+            <a href="../index.html" class="continue-shopping">TIẾP TỤC MUA SẮM <i class="fa-solid fa-arrow-rotate-left"></i></a>
         </div>
     </header>
 
@@ -469,7 +469,7 @@
                             Đơn hàng có thể giao nhanh trong <span id="express-time-desc">2-4h</span>. Quý khách giữ liên lạc để nhận hàng.
                         </div>
                         <div class="shipping-logo-group">
-                            <div class="partner-logo" id="logo-ahamove"><img src="images/ahamove-logo-v2.png" alt="AhaMove"></div>
+                            <div class="partner-logo" id="logo-ahamove"><img src="../images/ahamove-logo-v2.png" alt="AhaMove"></div>
                         </div>
                     </label>
 
@@ -486,9 +486,9 @@
                             Thời gian giao hàng tùy thuộc vào điều kiện của đơn vị vận chuyển. Dự kiến giao hàng: <span id="standard-time-desc">2-5 ngày</span>
                         </div>
                         <div class="shipping-logo-group">
-                            <div class="partner-logo" id="logo-ghn"><img src="images/ghn-logo.png" alt="GHN"></div>
-                            <div class="partner-logo" id="logo-shopee"><img src="images/shopee-express-logo.png" alt="Shopee"></div>
-                            <div class="partner-logo" id="logo-lex"><img src="images/lex-logo.png" alt="LEX"></div>
+                            <div class="partner-logo" id="logo-ghn"><img src="../images/ghn-logo.png" alt="GHN"></div>
+                            <div class="partner-logo" id="logo-shopee"><img src="../images/shopee-express-logo.png" alt="Shopee"></div>
+                            <div class="partner-logo" id="logo-lex"><img src="../images/lex-logo.png" alt="LEX"></div>
                         </div>
                     </label>
                 </div>
@@ -502,7 +502,7 @@
                         <label class="payment-label active" id="payLabelCOD">
                             <input type="radio" name="payMethod" value="cod" class="payment-radio" checked onchange="window.handlePaymentChange()">
                             <div class="payment-logo" style="width: 80px;">
-                                <img src="images/cod-icon-v3.png" alt="COD">
+                                <img src="../images/cod-icon-v3.png" alt="COD">
                             </div>
                             <div class="payment-content">
                                 <div class="payment-title">Thanh toán khi nhận hàng (COD)</div>
@@ -513,7 +513,7 @@
                         <label class="payment-label" id="payLabelVNPAY">
                             <input type="radio" name="payMethod" value="vnpay" class="payment-radio" onchange="window.handlePaymentChange()">
                             <div class="payment-logo">
-                                <img src="images/vnpay-logo.png" alt="VNPAY">
+                                <img src="../images/vnpay-logo.png" alt="VNPAY">
                             </div>
                             <div class="payment-content">
                                 <div class="payment-title">Cổng thanh toán VNPAY</div>
@@ -534,7 +534,7 @@
                         <label class="payment-label" id="payLabelSHOPEEPAY">
                             <input type="radio" name="payMethod" value="shopeepay" class="payment-radio" onchange="window.handlePaymentChange()">
                             <div class="payment-logo">
-                                <img src="images/shopeepay-logo.png" alt="ShopeePay">
+                                <img src="../images/shopeepay-logo.png" alt="ShopeePay">
                             </div>
                             <div class="payment-content">
                                 <div class="payment-title">Ví điện tử ShopeePay</div>
@@ -586,31 +586,13 @@
                 </div>
             </div>
         </div>
-
     </section>
 
-    <!-- Voucher Modal -->
-    <div class="voucher-modal-overlay" id="voucher-modal-overlay">
-        <div class="voucher-modal">
-            <div class="voucher-header">
-                MÃ ƯU ĐÃI
-                <button class="voucher-close-btn" onclick="closeVoucherModal()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="voucher-body">
-                <div class="voucher-input-group">
-                    <input type="text" id="voucher-input" placeholder="Nhập mã ưu đãi">
-                    <button class="voucher-apply-inline-btn" id="voucher-apply-btn">ÁP DỤNG</button>
-                </div>
-                
-                <div class="voucher-list">
-                    <!-- Load via JS -->
-                </div>
-            </div>
-            <div class="voucher-footer">
-                <button class="apply-voucher-btn" id="final-apply-voucher" disabled>ÁP DỤNG</button>
-            </div>
-        </div>
-    </div>
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-voucher"></div>
+    <div id="app-chat"></div>
+    <div id="app-auth"></div>
 
     <!-- Overlay Loading -->
     <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
@@ -624,11 +606,17 @@
             <i class="fa-solid fa-circle-check" style="font-size: 60px; color: #10b981; margin-bottom: 20px;"></i>
             <h2 style="margin-bottom: 15px; color: #333;">Đặt hàng thành công!</h2>
             <p style="margin-bottom: 25px; color: #666; line-height: 1.5;">Cảm ơn bạn đã mua sắm tại DAMOI. Chúng tôi sẽ liên hệ sớm nhất để giao hàng.</p>
-            <a href="index.html" class="btn-login-dark" style="width: 100%; box-sizing: border-box;">TIẾP TỤC MUA SẮM</a>
+            <a href="../index.html" class="btn-login-dark" style="width: 100%; box-sizing: border-box;">TIẾP TỤC MUA SẮM</a>
         </div>
     </div>
 
-    <script src="script.js?v=27"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let allCartItems = JSON.parse(localStorage.getItem('damoi_cart')) || [];
@@ -1271,5 +1259,18 @@
             validateForm();
         });
     </script>
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-voucher"></div>
+    <div id="app-chat"></div>
+    <div id="app-auth"></div>
+
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
 </body>
 </html>

@@ -5,7 +5,6 @@ const otplib = require('otplib');
 
 // 1. Dành cho Khách: Đăng ký (Register)
 router.post('/register', async (req, res) => {
-    console.log('POST /register hit'); // Log for route hit
     try {
         const { fullName, email, password, phone } = req.body;
 
@@ -55,8 +54,13 @@ router.post('/login', async (req, res) => {
     try {
         const { identifier, password } = req.body;
 
-        // Tìm User theo phone
-        const user = await User.findOne({ phone: identifier });
+        // Tìm User theo phone HOẶC email
+        const user = await User.findOne({
+            $or: [
+                { phone: identifier },
+                { email: identifier }
+            ]
+        });
 
         // So sánh mật khẩu (Chưa mã hoá)
         if (user && user.password === password) {

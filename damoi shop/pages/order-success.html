@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f7f7f7; color: #333; margin: 0; padding: 0; }
         
@@ -91,8 +92,8 @@
 <body>
 
     <header class="checkout-header">
-        <a href="index.html" class="nav-brand-logo">
-            <img src="images/logo.png" alt="DAMOI">
+        <a href="../index.html" class="nav-brand-logo">
+            <img src="../images/logo.png" alt="DAMOI">
         </a>
         <div class="checkout-steps">
             <div class="checkout-step"><div class="checkout-step-number">1</div> Giỏ hàng</div>
@@ -101,18 +102,16 @@
             <div class="checkout-step-divider"></div>
             <div class="checkout-step active"><div class="checkout-step-number">3</div> Hoàn tất</div>
         </div>
-        <div style="width: 100px;"></div> <!-- Spacer matching checkout.html logo alignment style -->
+        <div style="width: 100px;"></div>
     </header>
 
     <div class="success-container">
-        <!-- Header -->
         <div class="success-header">
             <div class="check-circle"><i class="fa-solid fa-check"></i></div>
             <h1 class="success-title">Đặt hàng thành công</h1>
             <p class="success-subtitle">Cảm ơn bạn đã mua sắm tại DAMOI Shop.</p>
         </div>
 
-        <!-- Main Info Card -->
         <div class="order-card">
             <h2 class="order-card-title">Thông tin đơn hàng</h2>
             
@@ -142,23 +141,31 @@
 
             <div class="actions">
                 <a href="#" class="btn btn-outline" onclick="handleTrackOrder(event)">Theo dõi đơn hàng</a>
-                <a href="index.html" class="btn btn-dark">Về trang chủ</a>
+                <a href="../index.html" class="btn btn-dark">Về trang chủ</a>
             </div>
         </div>
     </div>
 
-    <!-- Random Confetti (simple version) -->
     <canvas id="confetti" class="confetti"></canvas>
 
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-voucher"></div>
+    <div id="app-chat"></div>
+    <div id="app-auth"></div>
+
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
-            if (!orderInfo) {
-                // If no data, return early
-                return;
-            }
+            if (!orderInfo) return;
 
-            // --- Privacy Masking Utils ---
             const maskString = (str, visibleCount = 1) => {
                 if (!str) return '--';
                 if (str.length <= visibleCount) return str;
@@ -167,24 +174,16 @@
 
             const maskAddress = (address) => {
                 if (!address) return '--';
-                // Pattern: "Street, Ward, District, City"
                 const parts = address.split(',');
                 if (parts.length < 4) return address;
-                
-                // Show only the last part (City) and remove 'Thành phố ' or 'Tỉnh '
                 let city = parts[parts.length - 1].trim();
                 city = city.replace(/^Thành phố\s+/i, '').replace(/^Tỉnh\s+/i, '');
                 return '***, ***, ***, ' + city;
             };
 
-            // Fill Data
             document.getElementById('order-id').innerHTML = `${orderInfo.orderId} <i class="fa-regular fa-copy copy-btn" onclick="copyId('${orderInfo.orderId}')"></i>`;
-            
-            // Fix recipient mapping: fullName is in shippingAddress
             const recipient = orderInfo.shippingAddress?.fullName || orderInfo.customer?.name || '--';
             document.getElementById('recipient-name').innerText = maskString(recipient);
-
-            // Fix address mapping: address is in shippingAddress
             const address = orderInfo.shippingAddress?.address || orderInfo.customer?.address || '--';
             document.getElementById('order-address').innerText = maskAddress(address);
             
@@ -195,7 +194,6 @@
 
             const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0).replace('₫', ' ₫');
             document.getElementById('total-amount').innerText = formatMoney(orderInfo.totalPrice);
-            
             const totalQty = (orderInfo.orderItems || []).reduce((sum, item) => sum + (item.qty || 1), 0);
             document.getElementById('item-count').innerText = `(${totalQty} sản phẩm)`;
         });
@@ -205,15 +203,12 @@
             alert('Đã sao chép mã đơn hàng: ' + id);
         }
 
-        // Simple Confetti effect
         const canvas = document.getElementById('confetti');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
         let particles = [];
         const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-
         for (let i = 0; i < 150; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
@@ -223,7 +218,6 @@
                 velocity: { x: (Math.random() - 0.5) * 3, y: Math.random() * 3 + 2 }
             });
         }
-
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
@@ -241,17 +235,14 @@
             e.preventDefault();
             const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
             if (orderInfo && orderInfo.autoRegister) {
-                // Tạo session giả lập cho người dùng vừa đăng ký dựa vào SĐT
                 const userSession = {
                     phone: orderInfo.shippingAddress?.phone || '09xxxxxxxxx',
-                    name: orderInfo.shippingAddress?.fullName || 'Khách hàng mới',
+                    fullName: orderInfo.shippingAddress?.fullName || 'Khách hàng mới',
                     tier: 'Green',
                     points: 0
                 };
-                localStorage.setItem('currentUser', JSON.stringify(userSession));
-            }
-            // Chuyển tới trang profile có phần đơn hàng
-            window.location.href = 'my-profile.html';
+                localStorage.setItem('damoi_user', JSON.stringify(userSession));
+            window.location.href = '/pages/my-profile.html';
         }
     </script>
 </body>

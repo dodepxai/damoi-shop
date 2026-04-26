@@ -1,0 +1,65 @@
+    <!-- New Header Structure -->
+    <header class="site-header">
+        <div class="header-top container">
+            <a href="/index.html" class="nav-brand-logo">
+                <img src="/images/logo.png" alt="DAMOI SHOP">
+            </a>
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-btn" id="search-btn" style="cursor: pointer;"></i>
+                <input type="text" id="search-input" placeholder="Tìm kiếm sản phẩm...">
+                <div id="search-suggestions" class="search-suggestions-dropdown"></div>
+            </div>
+
+            <div class="header-actions">
+                <a href="javascript:void(0)" class="action-item" id="accountAction" onclick="window.openAuthModal();">
+                    <i class="fa-regular fa-user"></i>
+                    <span id="accountText">Tài khoản</span>
+                </a>
+                <a href="/pages/checkout.html" class="action-item" onclick="window.openCartDrawer(); return false;">
+                    <div class="cart-icon-wrapper">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                    <span>Giỏ hàng</span>
+                </a>
+                
+                <!-- More Menu 3 chấm -->
+                <div class="action-item more-menu-trigger" onclick="toggleMoreMenu(event)" style="position: relative; cursor: pointer;">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <span>Thêm</span>
+                    <div class="more-menu-dropdown" id="moreMenuDropdown" style="display: none; position: absolute; top: 100%; right: -10px; background: #111111; border: 1px solid #333; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 170px; z-index: 1000; flex-direction: column; text-align: left; overflow: hidden; margin-top: 10px;">
+                        <a href="javascript:void(0)" onclick="toggleChat()" id="chatAction" style="padding: 12px 15px; color: #ffffff; text-decoration: none; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
+                            <div style="position: relative;">
+                                <i class="fa-regular fa-comment-dots" style="font-size: 16px;"></i>
+                                <span class="chat-unread-count" style="display: none; position: absolute; top: -5px; right: -8px; background: #e32124; color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">0</span>
+                            </div>
+                            <span style="font-size: 14px; font-weight: 500;">Tin nhắn</span>
+                        </a>
+                        <a href="/pages/wishlist.html" style="padding: 12px 15px; color: #ffffff; text-decoration: none; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
+                            <i class="fa-regular fa-heart" style="font-size: 16px;"></i>
+                            <span style="font-size: 14px; font-weight: 500;">Yêu thích</span>
+                        </a>
+                        <a href="/pages/contact.html" style="padding: 12px 15px; color: #ffffff; text-decoration: none; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: flex-start; gap: 10px;">
+                            <i class="fa-solid fa-headset" style="font-size: 16px;"></i>
+                            <span style="font-size: 14px; font-weight: 500;">Liên hệ</span>
+                        </a>
+                        <a href="javascript:void(0)" onclick="handleLogout()" id="logoutAction" style="padding: 12px 15px; color: #e32124; text-decoration: none; display: none; align-items: center; justify-content: flex-start; gap: 10px;">
+                            <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 16px;"></i>
+                            <span style="font-size: 14px; font-weight: 500;">Đăng xuất</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="header-bottom">
+            <div class="container nav-menu">
+                <a href="/index.html?isSale=true" class="nav-item">FINAL SALE</a>
+                <a href="/index.html?category=Nam" class="nav-item">NAM</a>
+                <a href="/index.html?category=Nữ" class="nav-item">NỮ</a>
+                <a href="/index.html?isBestSeller=true" class="nav-item">BÁN CHẠY</a>
+                <a href="/index.html?category=Công Sở %26 Học Đường" class="nav-item">CÔNG SỞ & HỌC ĐƯỜNG</a>
+            </div>
+        </nav>
+    </header>

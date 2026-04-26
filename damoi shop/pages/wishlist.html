@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản phẩm yêu thích | DAMOI SHOP</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css?v=31">
+    <style>
+        .wishlist-empty {
+            text-align: center;
+            padding: 100px 20px;
+        }
+        .wishlist-empty i {
+            font-size: 80px;
+            color: #eee;
+            margin-bottom: 20px;
+        }
+        .wishlist-empty h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .wishlist-empty p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-header"></div>
+
+    <main class="container">
+        <div class="hero-title-section" style="padding: 40px 0 20px 85px;">
+            <h1 style="font-size: 32px; font-weight: 800; border-left: 5px solid #1a1a1a; padding-left: 20px; text-transform: uppercase;">Sản phẩm yêu thích</h1>
+            <p style="color: #666; margin-top: 10px;">Những sản phẩm bạn đã lưu để xem sau.</p>
+        </div>
+
+        <section class="products-section">
+            <div id="wishlist-grid" class="product-grid">
+                <!-- Products will be rendered here by script.js -->
+                <div class="wishlist-empty" id="wishlist-empty-state" style="grid-column: 1 / -1;">
+                    <i class="fa-regular fa-heart"></i>
+                    <h2>Danh sách yêu thích đang trống</h2>
+                    <p>Hãy dạo quanh cửa hàng và chọn những sản phẩm bạn yêu thích nhé!</p>
+                    <a href="../index.html" class="auth-btn" style="padding: 12px 40px; text-decoration: none;">Tiếp tục mua sắm</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-chat"></div>
+    <div id="app-voucher"></div>
+    <div id="app-auth"></div>
+
+
+
+    <!-- Scripts -->
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load header/footer content manually or via script.js common logic
+            // Since script.js already has updateNavbarForUser etc, 
+            // we just need to ensure the grid is populated.
+            if (typeof renderWishlistPage === 'function') {
+                renderWishlistPage();
+            }
+        });
+    </script>
+</body>
+
+</html>

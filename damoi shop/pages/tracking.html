@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAMOI SHOP | Tra Cứu Đơn Hàng</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .tracking-section { max-width: 800px; margin: 60px auto; padding: 0 20px; min-height: 50vh;}
+        .tracking-box { background: #f9f9f9; padding: 40px; border-radius: 8px; text-align: center; }
+        .tracking-box h2 { margin-bottom: 20px; font-size: 28px; }
+        .tracking-form { display: flex; max-width: 500px; margin: 0 auto; gap: 10px; }
+        .tracking-form input { flex: 1; padding: 12px 20px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Outfit', sans-serif; font-size: 16px; }
+        .tracking-form button { background: #000; color: #fff; border: none; padding: 0 30px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+        .tracking-form button:hover { background: #333; }
+        
+        #tracking-results { margin-top: 40px; text-align: left; }
+        .order-card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .order-id { font-size: 14px; color: #666; }
+        .order-date { font-weight: 500; }
+        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-success { background: #d4edda; color: #155724; }
+        
+        .order-item { display: flex; align-items: center; margin-bottom: 15px; }
+        .order-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #eee; }
+        .order-item-info { flex: 1; }
+        .order-item-name { font-weight: 500; font-size: 15px; margin-bottom: 5px;}
+        .order-item-meta { font-size: 13px; color: #666; }
+        
+        .order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        .order-total-price { font-size: 18px; font-weight: 700; color: #F44336; }
+    </style>
+</head>
+<body>
+
+    <div id="app-header"></div>
+
+    <div class="breadcrumb container">
+        <a href="../index.html">Trang chủ</a> | <span>Tra cứu đơn hàng</span>
+    </div>
+
+    <!-- Tracking Section -->
+    <section class="tracking-section">
+        <div class="tracking-box">
+            <h2>Kiểm tra tình trạng đơn hàng</h2>
+            <p style="margin-bottom: 25px; color: #666;">Nhập số điện thoại bạn đã dùng để đặt hàng để xem tiến độ giao diện nhé!</p>
+            
+            <form class="tracking-form" id="trackingForm">
+                <input type="text" id="trackPhone" placeholder="Ví dụ: 0988xxxxxx" required>
+                <button type="submit">TRA CỨU <i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            
+            <div id="tracking-results">
+                <!-- Data will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-voucher"></div>
+    <div id="app-chat"></div>
+    <div id="app-auth"></div>
+
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userData = JSON.parse(localStorage.getItem('damoi_user'));
+            
+            if (!userData) {
+                alert("Vui lòng đăng nhập để xem tài khoản và đơn hàng của bạn.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const phone = userData.phone;
+            const resultsDiv = document.getElementById('tracking-results');
+            
+            document.getElementById('trackingForm').style.display = 'none';
+            document.querySelector('.tracking-box h2').innerText = 'Lịch sử mua hàng';
+            document.querySelector('.tracking-box p').innerText = `Tài khoản: ${userData.fullName} - SĐT: ${phone}`;
+            
+            resultsDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:24px;"></i> Đang tải thông tin đơn hàng...</div>';
+
+            try {
+                const response = await fetch(`/api/orders/myorders/${phone}`);
+                const orders = await response.json();
+
+                if (orders.length === 0) {
+                    resultsDiv.innerHTML = '<div style="color:#666; text-align:center; padding: 40px; background: #fff; border: 1px dashed #ddd; border-radius: 4px;">Bạn chưa có đơn hàng nào cả. Bắt đầu mua sắm ngay nhé!</div>';
+                    return;
+                }
+
+                resultsDiv.innerHTML = `<h3 style="margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; display:inline-block;">Bạn có ${orders.length} đơn hàng</h3>`;
+
+                const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+
+                orders.forEach(order => {
+                    const date = new Date(order.createdAt).toLocaleDateString('vi-VN');
+                    const statusClass = order.status === 'Chờ xử lý' ? 'status-pending' : 'status-success';
+                    
+                    let itemsHtml = '';
+                    order.orderItems.forEach(item => {
+                        itemsHtml += `
+                            <div class="order-item">
+                                <img src="${item.image}" alt="">
+                                <div class="order-item-info">
+                                    <div class="order-item-name">${item.name}</div>
+                                    <div class="order-item-meta">Màu: ${item.color} - Size ${item.size} - SL: <strong style="color:black">${item.qty}</strong></div>
+                                </div>
+                                <div style="font-weight: 500;">${formatMoney(item.price * item.qty)}</div>
+                            </div>
+                        `;
+                    });
+
+                    const cardHtml = `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <div class="order-date">Đơn hàng ngày ${date}</div>
+                                    <div class="order-id">Mã đơn: #${order._id.substring(order._id.length - 6).toUpperCase()}</div>
+                                </div>
+                                <div class="order-status ${statusClass}">${order.status}</div>
+                            </div>
+                            
+                            <div class="order-items-list">
+                                ${itemsHtml}
+                            </div>
+                            
+                            <div class="order-footer">
+                                <div>Giao đến: <strong>${order.shippingAddress.fullName}</strong> (${order.shippingAddress.address})</div>
+                                <div class="order-total-price">${formatMoney(order.totalPrice)}</div>
+                            </div>
+                        </div>
+                    `;
+                    resultsDiv.innerHTML += cardHtml;
+                });
+
+            } catch (error) {
+                console.error("Lỗi:", error);
+                resultsDiv.innerHTML = '<div style="color:red; text-align:center;">Lỗi kết nối máy chủ!</div>';
+            }
+        });
+    </script>
+</body>
+</html>

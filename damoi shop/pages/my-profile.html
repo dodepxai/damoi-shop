@@ -21,17 +21,9 @@
             --border: #eaebec;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg-gray); color: var(--text); line-height: 1.5; }
+        /* Profile specific layout */
+        .profile-layout { display: grid; grid-template-columns: 320px 1fr; gap: 30px; align-items: start; }
 
-        /* Header */
-        header { background: #fff; padding: 15px 120px; border-bottom: 1px solid var(--border); display: flex; align-items: center; position: sticky; top: 0; z-index: 100;}
-        .nav-brand-logo { width: 175px; height: 80px; overflow: hidden; position: relative; display: block; flex-shrink: 0; text-decoration: none; background: transparent !important; }
-        .nav-brand-logo img { position: absolute; height: 170px; top: 40%; transform: translateY(-50%); left: -70px; mix-blend-mode: darken; pointer-events: none; max-width: none; }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-
-        /* Breadcrumb */
         .breadcrumb { font-size: 14px; color: var(--gray); margin-bottom: 25px; }
         .breadcrumb a { color: var(--gray); text-decoration: none; }
         .breadcrumb a:hover { color: var(--primary); }
@@ -122,20 +114,16 @@
 
         @media (max-width: 900px) {
             .profile-layout { grid-template-columns: 1fr; }
-            header { padding: 15px 20px; }
         }
     </style>
+    <link rel="stylesheet" href="../style.css?v=30">
 </head>
 <body>
-    <header>
-        <a href="index.html" class="nav-brand-logo">
-            <img src="images/logo.png" alt="DAMOI">
-        </a>
-    </header>
+    <div id="app-header"></div>
 
     <div class="container">
         <div class="breadcrumb">
-            <a href="index.html">Trang chủ</a>
+            <a href="../index.html">Trang chủ</a>
             <span class="separator">|</span>
             <a href="#">Tài khoản</a>
             <span class="separator">|</span>
@@ -146,7 +134,7 @@
             <!-- Sidebar -->
             <aside class="sidebar-wrapper">
                 <div class="member-card">
-                    <div class="member-greeting">Xin chào! <span id="userPhone">083xxxxxxx</span></div>
+                    <div class="member-greeting">Xin chào! <span id="userPhone">---</span></div>
                     <div class="tier-info">
                         <div>Hạng thẻ: <span class="tier-name" id="userTier">Green</span></div>
                         <div>KHTT: <span class="points-val" id="userPoints">0</span></div>
@@ -201,7 +189,7 @@
                         <i class="fa-solid fa-arrow-right menu-arrow"></i>
                     </a>
 
-                    <a href="#" class="menu-item" onclick="logout()">
+                    <a href="#" class="menu-item" onclick="if(window.handleLogout) window.handleLogout();">
                         <div class="menu-icon"><i class="fa-solid fa-arrow-right-from-bracket"></i></div>
                         <div class="menu-content">
                             <div class="menu-title">Đăng xuất</div>
@@ -234,7 +222,7 @@
                         </div>
                         <div class="info-row">
                             <div class="info-label">Email</div>
-                            <div class="info-value">-</div>
+                            <div class="info-value" id="profileEmail">-</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Ngày sinh</div>
@@ -265,88 +253,100 @@
         </div>
     </div>
 
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-voucher"></div>
+    <div id="app-chat"></div>
+
+    <!-- Scripts -->
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check auth (Simulated)
-            const currentUserStr = localStorage.getItem('currentUser');
-            let currentUser = null;
-            
-            if (currentUserStr) {
-                currentUser = JSON.parse(currentUserStr);
-                document.getElementById('userPhone').innerText = currentUser.phone || 'N/A';
-                document.getElementById('userTier').innerText = currentUser.tier || 'Green';
-                document.getElementById('userPoints').innerText = currentUser.points || '0';
-            } else {
-                // If user somehow ends up here without session, maybe they are just tracking via token.
-                // For demo, we just populate via last order.
-                const lastOrder = JSON.parse(sessionStorage.getItem('last_order_details'));
-                if(lastOrder) {
-                   document.getElementById('userPhone').innerText = lastOrder.shippingAddress?.phone || 'Guest';
+        document.addEventListener('componentsLoaded', () => {
+            // Check auth
+            const userStr = localStorage.getItem('damoi_user');
+            if (!userStr) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast("Dừng lại một chút! Đăng nhập để xem hồ sơ và nhận ưu đãi riêng cho bạn nhé ❤️");
+                } else {
+                    alert("Vui lòng đăng nhập để xem hồ sơ!");
                 }
-            }
-
-            // Load latest order to show the tracking capability
-            const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
-            const container = document.getElementById('orders-container');
-
-            // Populate account data
-            if (currentUser) {
-                document.getElementById('profileName').innerText = currentUser.name || '-';
-                document.getElementById('profilePhone').innerText = currentUser.phone || '-';
-            } else if (orderInfo) {
-                document.getElementById('profileName').innerText = orderInfo.shippingAddress?.fullName || '-';
-                document.getElementById('profilePhone').innerText = orderInfo.shippingAddress?.phone || '-';
-            }
-
-            if (orderInfo) {
-                const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0).replace(/(\s*₫|\s*đ)/g, 'đ');
                 
-                // Construct items HTML
-                let itemsHtml = '';
-                if (orderInfo.orderItems && orderInfo.orderItems.length > 0) {
-                    orderInfo.orderItems.forEach(item => {
-                        const imgPath = item.img ? (item.img.startsWith('images/') ? item.img : `images/${item.img}`) : 'images/default-thumbnail.jpg';
-                        itemsHtml += `
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 3000);
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            document.getElementById('userPhone').innerText = user.phone || '---';
+            document.getElementById('profileName').innerText = user.fullName || '-';
+            document.getElementById('profilePhone').innerText = user.phone || '-';
+            document.getElementById('profileEmail').innerText = user.email || '-';
+            
+            // Tải đơn hàng thực tế từ API nếu có
+            fetchOrders(user._id);
+        });
+
+        async function fetchOrders(userId) {
+            const container = document.getElementById('orders-container');
+            if (!container) return;
+
+            try {
+                // Giả lập hoặc gọi API thật
+                const res = await fetch(`/api/orders/user/${userId}`);
+                const orders = await res.json();
+
+                if (orders.length > 0) {
+                    const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0).replace(/(\s*₫|\s*đ)/g, 'đ');
+                    
+                    container.innerHTML = orders.map(order => {
+                        let itemsHtml = order.items.map(item => `
                             <div class="product-item">
-                                <img src="${imgPath}" alt="${item.name}" class="product-img" onerror="this.src='https://via.placeholder.com/80x100?text=SP'">
+                                <img src="${item.image}" alt="${item.name}" class="product-img" onerror="this.src='https://via.placeholder.com/80x100?text=SP'">
                                 <div class="product-info">
                                     <div class="product-name">${item.name}</div>
-                                    <div class="product-meta">Phân loại: ${item.color || 'Mặc định'}, Kích cỡ: ${item.size || 'Freesize'} - Số lượng: ${item.qty || 1}</div>
-                                    <div class="product-price">${formatMoney(item.originalPrice || item.price)}</div>
+                                    <div class="product-meta">Size: ${item.size} - Số lượng: ${item.qty}</div>
+                                    <div class="product-price">${formatMoney(item.price)}</div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        return `
+                            <div class="order-card-item">
+                                <div class="order-header">
+                                    <div class="order-id">Mã ĐH: ${order._id.slice(-8).toUpperCase()}</div>
+                                    <div class="order-status">${order.status || 'Đang xử lý'}</div>
+                                </div>
+                                <div class="order-body">
+                                    ${itemsHtml}
+                                </div>
+                                <div class="order-footer">
+                                    <div class="total-label">Tổng cộng</div>
+                                    <div class="total-val">${formatMoney(order.totalAmount)}</div>
                                 </div>
                             </div>
                         `;
-                    });
+                    }).join('');
                 } else {
-                    itemsHtml = `<div style="color: #888; font-style: italic;">Chi tiết sản phẩm không khả dụng</div>`;
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 50px 0; color: #888;">
+                            <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 15px; color: #ccc;"></i>
+                            <p>Bạn chưa có đơn hàng nào.</p>
+                            <a href="../index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px;">Tiếp tục mua sắm</a>
+                        </div>
+                    `;
                 }
-
-                const orderHtml = `
-                    <div class="order-card-item">
-                        <div class="order-header">
-                            <div class="order-id">Mã ĐH: ${orderInfo.orderId || 'DMF---'}</div>
-                            <div class="order-status">Đang xử lý</div>
-                        </div>
-                        <div class="order-body">
-                            ${itemsHtml}
-                        </div>
-                        <div class="order-footer">
-                            <div class="total-label">Thành tiền / ${orderInfo.paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng' : 'Đã thanh toán'}</div>
-                            <div class="total-val">${formatMoney(orderInfo.totalPrice)}</div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML = orderHtml;
-            } else {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 50px 0; color: #888;">
-                        <i class="fa-solid fa-box-open" style="font-size: 40px; margin-bottom: 15px; color: #ccc;"></i>
-                        <p>Bạn chưa có đơn hàng nào.</p>
-                        <a href="index.html" style="color: var(--primary); text-decoration: none; font-weight: 600; display: inline-block; margin-top: 10px;">Tiếp tục mua sắm</a>
-                    </div>
-                `;
+            } catch (err) {
+                console.error("Lỗi tải đơn hàng:", err);
             }
-        });
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
@@ -363,12 +363,6 @@
                 document.getElementById('breadcrumb-current').innerText = 'Đơn hàng của tôi';
             }
         }
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            sessionStorage.removeItem('last_order_details');
-            window.location.href = 'index.html';
-        }
     </script>
 </body>
-</html>
+

@@ -1,0 +1,20 @@
+<div class="voucher-modal-overlay" id="voucher-modal-overlay" onclick="window.closeVoucherModal()">
+    <div class="voucher-modal" onclick="event.stopPropagation()">
+        <div class="voucher-header">
+            MÃ ƯU ĐÃI
+            <button class="voucher-close-btn" onclick="window.closeVoucherModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="voucher-body">
+            <div class="voucher-input-group">
+                <input type="text" id="voucher-input" placeholder="Nhập mã ưu đãi...">
+                <button class="voucher-apply-inline-btn" onclick="window.applyVoucherLogic(document.getElementById('voucher-input').value)">ÁP DỤNG</button>
+            </div>
+            <div class="voucher-list">
+                <!-- Vouchers injected by main.js fetchAndRenderVouchers() -->
+            </div>
+        </div>
+        <div class="voucher-footer">
+            <button class="apply-voucher-btn" id="final-apply-voucher" disabled onclick="window.applyVoucherLogic(window.selectedVoucherCode)">DÙNG MÃ</button>
+        </div>
+    </div>
+</div>

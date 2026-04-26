@@ -8,69 +8,29 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css?v=30">
+    <!-- EmailJS SDK (Gửi mail thật) -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("k8gHPyL84Hc-uFn1B"); 
+        })();
+    </script>
 </head>
 
 <body>
 
-    <!-- New Header Structure -->
-    <header class="site-header">
-        <div class="header-top container">
-            <a href="index.html" class="nav-brand-logo">
-                <img src="images/logo.png" alt="DAMOI SHOP">
-            </a>
-
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Tìm kiếm">
-            </div>
-
-            <div class="header-actions">
-                <a href="#" class="action-item">
-                    <i class="fa-solid fa-shop"></i>
-                    <span>Cửa hàng</span>
-                </a>
-                <a href="javascript:void(0)" class="action-item" id="accountAction" onclick="window.openAuthModal();">
-                    <i class="fa-regular fa-user"></i>
-                    <span id="accountText">Tài khoản</span>
-                </a>
-                <a href="cart.html" class="action-item" onclick="window.openCartDrawer(); return false;">
-                    <div class="cart-icon-wrapper">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                        <span class="cart-count">0</span>
-                    </div>
-                    <span>Giỏ hàng</span>
-                </a>
-                <a href="javascript:void(0)" class="action-item" id="chatAction" style="display: none;"
-                    onclick="toggleChat()">
-                    <div class="cart-icon-wrapper">
-                        <i class="fa-regular fa-comment-dots"></i>
-                        <span class="chat-unread-count" style="display: none;">0</span>
-                    </div>
-                    <span>Tin nhắn</span>
-                </a>
-            </div>
-        </div>
-
-        <nav class="header-bottom">
-            <div class="container nav-menu">
-                <a href="index.html?isSale=true" class="nav-item">FINAL SALE</a>
-                <a href="index.html?category=Nam" class="nav-item">NAM</a>
-                <a href="index.html?category=Nữ" class="nav-item">NỮ</a>
-                <a href="index.html?isBestSeller=true" class="nav-item">BÁN CHẠY</a>
-                <a href="index.html?category=Công Sở %26 Học Đường" class="nav-item">CÔNG SỞ & HỌC ĐƯỜNG</a>
-            </div>
-        </nav>
-    </header>
+    <div id="app-header"></div>
 
     <!-- Breadcrumb (tự động cập nhật qua JS) -->
     <nav class="breadcrumb-bar" id="breadcrumb-bar" style="display:none;">
-        <div class="container breadcrumb-content-wrap" style="padding-left: 85px;">
+        <div class="container breadcrumb-content-wrap" style="padding-left: 120px;">
             <a href="index.html">Trang chủ</a>
             <span>|</span>
             <span id="breadcrumb-content"></span>
@@ -234,7 +194,7 @@
                 <div class="filter-content" style="max-height: 200px;">
                     <div class="price-range">
                         <input type="number" id="min-price" placeholder="200.000 đ">
-                        <span style="color: #555;">&mdash;</span>
+                        <span style="color: #ffffff;">&mdash;</span>
                         <input type="number" id="max-price" placeholder="699.000 đ">
                     </div>
                 </div>
@@ -248,210 +208,19 @@
         </div>
     </section>
 
-    <!-- New Premium Footer -->
-    <footer>
-        <!-- Pre-footer (Store Locator & Newsletter) -->
-        <div class="pre-footer">
-            <div class="container pre-footer-container">
-                <div class="pre-footer-item">
-                    <i class="fa-solid fa-store icon-large"></i>
-                    <div class="pre-footer-text">
-                        <h3>HỆ THỐNG CỬA HÀNG</h3>
-                        <p>Tìm kiếm cửa hàng gần bạn!</p>
-                    </div>
-                    <a href="#" class="pre-footer-link">Xem danh sách <i class="fa-solid fa-chevron-right"
-                            style="margin-left:5px; font-size:12px;"></i></a>
-                </div>
-                <div class="pre-footer-divider"></div>
-                <div class="pre-footer-item">
-                    <i class="fa-regular fa-envelope icon-large"></i>
-                    <div class="pre-footer-text">
-                        <h3>ĐĂNG KÝ NHẬN BẢN TIN</h3>
-                        <p>Cập nhật những thông tin mới nhất về ưu đãi, thời trang và phong cách sống.</p>
-                    </div>
-                    <a href="#" class="pre-footer-link">Đăng ký ngay <i class="fa-solid fa-chevron-right"
-                            style="margin-left:5px; font-size:12px;"></i></a>
-                </div>
-            </div>
-        </div>
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-auth"></div>
+    <div id="app-chat"></div>
+    <div id="app-voucher"></div>
 
-        <!-- Main Footer -->
-        <div class="main-footer">
-            <div class="container">
-                <h2 class="footer-company-name">CÔNG TY CỔ PHẦN DAMOI SHOP</h2>
-                <hr class="footer-divider">
-                <div class="footer-grid">
-                    <!-- Column 1: Info -->
-                    <div class="footer-col col-info">
-                        <p>Số ĐKKD: 0107574310, ngày cấp: 23/09/2016<br>
-                            Nơi cấp: Sở Kế hoạch và đầu tư Hà Nội.</p>
-                        <p>Trụ sở chính: số 688 Đường Quang Trung,<br>
-                            P. Hà Đông, TP. Hà Nội.</p>
-                        <p>Địa chỉ: Phòng 301, tầng 3, tòa nhà GP Invest,<br>
-                            số 170 La Thành, P. Ô Chợ Dừa, TP. Hà Nội.</p>
-                        <p>Điện thoại: 024 - 7303.0222<br>
-                            Fax: 024 - 6273.7441<br>
-                            Email: info@damoishop.com</p>
-                    </div>
-
-                    <!-- Column 2: Brands -->
-                    <div class="footer-col">
-                        <h3>THƯƠNG HIỆU</h3>
-                        <ul>
-                            <li><a href="#">Giới thiệu</a></li>
-                            <li><a href="#">Hệ thống cửa hàng</a></li>
-                            <li><a href="#">Tin tức</a></li>
-                            <li><a href="#">Tuyển dụng</a></li>
-                            <li><a href="#">Với cộng đồng</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 3: Support -->
-                    <div class="footer-col">
-                        <h3>HỖ TRỢ</h3>
-                        <ul>
-                            <li><a href="#">Hỏi đáp</a></li>
-                            <li><a href="dieu-khoan-dich-vu.html">Điều kiện - Điều khoản KHTT</a></li>
-                            <li><a href="#">Chính sách KHTT</a></li>
-                            <li><a href="#">Chính sách vận chuyển</a></li>
-                            <li><a href="chinh-sach-bao-mat.html">Chính sách bảo mật thông tin KH</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 4: Account -->
-                    <div class="footer-col">
-                        <h3>TÀI KHOẢN</h3>
-                        <ul>
-                            <li><a href="javascript:void(0)" onclick="window.openAuthModal()">Đăng nhập/ Đăng ký</a></li>
-                            <li><a href="#">Mã ưu đãi</a></li>
-                            <li><a href="#">Lịch sử đặt hàng</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 5: Social & Payment -->
-                    <div class="footer-col">
-                        <div class="footer-social-payment">
-                            <div class="social-links">
-                                <h3 style="margin-bottom: 15px;">THEO DÕI CHÚNG TÔI</h3>
-                                <div class="social-icons">
-                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                                    <a href="#"><i class="fa-brands fa-youtube" style="font-size:16px;"></i></a>
-                                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                                </div>
-                            </div>
-                            <div class="payment-methods">
-                                <h3 style="margin-bottom: 15px; margin-top:30px;">PHƯƠNG THỨC THANH TOÁN</h3>
-                                <div class="payment-icons">
-                                    <i class="fa-solid fa-money-bill-1"></i>
-                                    <i class="fa-brands fa-cc-visa"></i>
-                                    <i class="fa-brands fa-cc-mastercard"></i>
-                                    <i class="fa-brands fa-cc-jcb"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Chat Widget -->
-    <div class="chat-widget-container">
-        <div id="chat-window" class="chat-window">
-            <div class="chat-window-header">
-                <span><i class="fa-solid fa-headset"></i> Hỗ trợ trực tuyến</span>
-                <button onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="chat-messages" class="chat-window-body">
-                <div class="chat-m-msg received">
-                    Chào bạn! DAMOI SHOP có thể giúp gì cho bạn?
-                </div>
-            </div>
-            <div class="chat-window-footer">
-                <form id="customer-chat-form">
-                    <input type="text" id="customer-chat-input" placeholder="Nhập tin nhắn..." autocomplete="off">
-                    <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
-                </form>
-            </div>
-        </div>
-        <button id="chat-toggle-btn" class="chat-toggle-btn" onclick="toggleChat()">
-            <i class="fa-solid fa-comments"></i>
-        </button>
-    </div>
-
-    <!-- Cart Overlay & Drawer -->
-    <div class="cart-overlay" id="cart-overlay" onclick="closeCartDrawer()"></div>
-    <div class="cart-drawer" id="cart-drawer">
-        <div class="cart-drawer-header">
-            <h2>Giỏ hàng (<span id="drawer-cart-count">0</span>)</h2>
-            <button class="cart-close-btn" onclick="closeCartDrawer()"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="cart-promo-text">
-            <i class="fa-solid fa-circle-xmark" style="color:#d32f2f;"></i> Mua thêm <span id="promo-remaining">420.000
-                đ</span> để được miễn phí vận chuyển
-        </div>
-
-        <div class="cart-drawer-body">
-            <div class="cart-select-all">
-                <input type="checkbox" id="select-all-cart" checked>
-                <label for="select-all-cart">Chọn tất cả</label>
-                <span style="margin-left:auto; font-size:12px; color:#666;">Bạn đã chọn <span
-                        id="drawer-selected-count">0</span> sản phẩm</span>
-            </div>
-
-            <div class="drawer-cart-items" id="drawer-cart-items">
-                <!-- Render via JS -->
-            </div>
-
-            <div class="cart-suggestions">
-                <h3>GỢI Ý CHO BẠN</h3>
-                <div class="suggestions-grid" id="drawer-suggestions" style="text-align:center; padding-top:20px;">
-                    <i class="fa-solid fa-box-open" style="font-size:30px; color:#ddd; margin-bottom:10px;"></i>
-                    <p style="color:#999; font-size:13px;">Chưa có sản phẩm gợi ý nào</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="cart-drawer-footer">
-            <div class="promo-code-btn">
-                <span><i class="fa-solid fa-ticket"></i> Mã ưu đãi</span>
-                <span>Chọn hoặc nhập mã <i class="fa-solid fa-chevron-right"></i></span>
-            </div>
-            <div class="cart-subtotal">
-                <span>Tạm tính</span>
-                <span class="subtotal-price" id="drawer-subtotal">0 đ</span>
-            </div>
-            <button class="checkout-btn" onclick="window.location.href='checkout.html'">THANH TOÁN</button>
-        </div>
-    </div>
-
-    <!-- Voucher Modal -->
-    <div class="voucher-modal-overlay" id="voucher-modal-overlay">
-        <div class="voucher-modal">
-            <div class="voucher-header">
-                MÃ ƯU ĐÃI
-                <button class="voucher-close-btn" onclick="closeVoucherModal()"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="voucher-body">
-                <div class="voucher-input-group">
-                    <input type="text" id="voucher-input" placeholder="Nhập mã ưu đãi">
-                    <button class="voucher-apply-inline-btn" id="voucher-apply-btn">ÁP DỤNG</button>
-                </div>
-
-                <div class="voucher-list">
-                    <!-- Load via JS -->
-                </div>
-            </div>
-            <div class="voucher-footer">
-                <button class="apply-voucher-btn" id="final-apply-voucher" disabled>ÁP DỤNG</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js?v=27"></script>
+    <script src="js/components.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/wishlist.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>

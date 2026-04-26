@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ | DAMOI SHOP</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        :root {
+            --primary: #ffffff;
+            --accent: #e32124;
+            --text-gray: #bbbbbb;
+            --bg-light: #232323;
+            --border: #333333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #1a1a1a; color: #ffffff; line-height: 1.6; }
+        .contact-container { max-width: 1400px; margin: 0 auto; padding: 0 45px; }
+
+        /* Header / Hero */
+        .contact-hero { background: var(--bg-light); padding: 80px 0; border-bottom: 1px solid var(--border); text-align: left; }
+        .contact-hero h1 { font-size: 48px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; border-left: 8px solid var(--primary); padding-left: 25px; line-height: 1; }
+        .contact-hero p { font-size: 18px; color: var(--text-gray); padding-left: 33px; max-width: 700px; }
+
+        /* Main Layout */
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; margin: 80px 0; }
+
+        /* Left Side: Info */
+        .info-section h2 { font-size: 28px; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; position: relative; }
+        .info-section h2::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 40px; height: 3px; background: var(--accent); }
+
+        .info-cards { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .info-card { display: flex; gap: 25px; align-items: flex-start; padding: 30px; border: 1px solid var(--border); border-radius: 12px; transition: 0.3s; }
+        .info-card:hover { border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .info-card i { font-size: 28px; color: #ffffff; margin-top: 5px; }
+        .info-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .info-card p { color: var(--text-gray); font-size: 15px; }
+        .info-card a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 14px; margin-top: 10px; display: inline-block; }
+
+        /* Right Side: Form */
+        .form-section { background: #fff; padding: 50px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 15px 45px rgba(0,0,0,0.03); }
+        .form-section h3 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .form-section p { color: var(--text-gray); margin-bottom: 35px; font-size: 15px; }
+
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; text-transform: uppercase; color: #333; margin-bottom: 10px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 15px 20px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 15px; transition: 0.3s; background: #fafafa; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(0,0,0,0.03); }
+        
+        .btn-submit { background: var(--primary); color: #fff; border: none; padding: 18px 40px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-submit:hover { background: #333; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        /* Map Placeholder */
+        .map-section { width: 100%; height: 500px; background: #eee; margin-top: 80px; border-radius: 12px; overflow: hidden; position: relative; }
+        .map-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #999; }
+        .map-placeholder i { font-size: 50px; margin-bottom: 15px; }
+
+        @media (max-width: 1024px) {
+            .contact-grid { grid-template-columns: 1fr; gap: 50px; }
+            .contact-hero h1 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-header"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="contact-hero">
+            <div class="contact-container">
+                <h1>Liên hệ với DAMOI</h1>
+                <p>Chúng tôi luôn lắng nghe và sẵn sàng hỗ trợ bạn. Hãy gửi thông tin cho chúng tôi nếu bạn có bất kỳ thắc mắc nào.</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="contact-container">
+            <div class="contact-grid">
+                
+                <!-- Info Column -->
+                <div class="info-section">
+                    <h2>Thông tin liên hệ</h2>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <h4>Địa chỉ trụ sở</h4>
+                                <p>Số 688 Đường Quang Trung, P. Hà Đông, TP. Hà Nội.</p>
+                                <a href="#">Xem trên bản đồ <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <i class="fa-solid fa-phone-volume"></i>
+                            <div>
+                                <h4>Hotline hỗ trợ</h4>
+                                <p>Tư vấn mua hàng: 1800 6061 (Miễn phí)<br>Khiếu nại & Góp ý: 024 7303 0222</p>
+                                <a href="tel:18006061">Gọi ngay <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <div>
+                                <h4>Email phản hồi</h4>
+                                <p>Mọi thắc mắc về đơn hàng: support@damoishop.com<br>Hợp tác kinh doanh: info@damoishop.com</p>
+                                <a href="mailto:support@damoishop.com">Gửi email <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <i class="fa-solid fa-clock"></i>
+                            <div>
+                                <h4>Giờ làm việc</h4>
+                                <p>Thứ 2 - Thứ 7: 08:30 - 22:00<br>Chủ nhật: 09:00 - 21:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Column -->
+                <div class="form-section">
+                    <h3>Gửi lời nhắn cho chúng tôi</h3>
+                    <p>Nếu bạn có thắc mắc về sản phẩm hoặc đơn hàng, hãy để lại thông tin, chúng tôi sẽ phản hồi trong vòng 24h làm việc.</p>
+                    
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label>Họ và tên của bạn</label>
+                            <input type="text" placeholder="VD: Nguyễn Văn A" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" placeholder="VD: 0988xxxxxx" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa chỉ Email</label>
+                            <input type="email" placeholder="example@gmail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Chủ đề</label>
+                            <input type="text" placeholder="VD: Tư vấn kích cỡ, Khiếu nại giao hàng..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nội dung chi tiết</label>
+                            <textarea rows="5" placeholder="Nhập nội dung bạn muốn nhắn gửi..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Gửi tin nhắn ngay</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Map Section -->
+            <div class="map-section">
+                <div class="map-placeholder">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <p style="font-weight: 600;">Bản đồ hệ thống cửa hàng DAMOI SHOP đang được cập nhật</p>
+                    <p style="font-size: 14px; margin-top: 5px;">Bạn có thể tra cứu nhanh tại mục "Hệ thống cửa hàng" ở chân trang.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="app-footer"></div>
+    <div id="app-cart"></div>
+    <div id="app-auth"></div>
+    <div id="app-chat"></div>
+    <div id="app-voucher"></div>
+
+    <script src="../js/components.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/wishlist.js"></script>
+    <script src="../js/chat.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        document.getElementById('contact-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Cảm ơn bạn! Thông tin liên hệ đã được gửi đi thành công. Chúng tôi sẽ phản hồi sớm nhất có thể.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

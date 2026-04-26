@@ -1,0 +1,25 @@
+<div class="chat-widget-container" id="chat-widget">
+    <button class="chat-toggle-btn" id="chat-toggle-btn" onclick="window.toggleChat()">
+        <i class="fa-regular fa-comment-dots"></i>
+        <span class="chat-unread-count" style="display: none;">0</span>
+    </button>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-window-header">
+            <span>Hỗ trợ DAMOI</span>
+            <button onclick="window.toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-window-body" id="chat-messages">
+            <div class="chat-m-msg received">
+                Chào bạn! DAMOI có thể giúp gì cho bạn không?
+                <span class="m-time">Vừa xong</span>
+            </div>
+        </div>
+        <div class="chat-window-footer">
+            <form id="customer-chat-form">
+                <input type="text" id="customer-chat-input" placeholder="Nhập tin nhắn..." autocomplete="off">
+                <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+</div>
