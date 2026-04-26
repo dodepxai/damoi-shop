@@ -134,7 +134,7 @@
             <!-- Sidebar -->
             <aside class="sidebar-wrapper">
                 <div class="member-card">
-                    <div class="member-greeting">Xin chào! <span id="userPhone">---</span></div>
+                    <div class="member-greeting">Xin chào! <span id="greetingName">---</span></div>
                     <div class="tier-info">
                         <div>Hạng thẻ: <span class="tier-name" id="userTier">Green</span></div>
                         <div>KHTT: <span class="points-val" id="userPoints">0</span></div>
@@ -279,7 +279,7 @@
             }
 
             const user = JSON.parse(userStr);
-            document.getElementById('userPhone').innerText = user.phone || '---';
+            document.getElementById('greetingName').innerText = user.fullName || user.phone || '---';
             document.getElementById('profileName').innerText = user.fullName || '-';
             document.getElementById('profilePhone').innerText = user.phone || '-';
             document.getElementById('profileEmail').innerText = user.email || '-';
