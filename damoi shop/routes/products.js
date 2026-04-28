@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // 1. Lấy danh sách sản phẩm (Hỗ trợ Search & Lọc Category)
 router.get('/', async (req, res) => {
     try {
-        const { search, category, subCategory, isNewProduct } = req.query;
+        const { search, category, subCategory, isNewProduct, size, color, minPrice, maxPrice } = req.query;
         let filter = {};
 
         // Lọc theo từ khóa tìm kiếm (Tên sản phẩm)
@@ -21,6 +21,23 @@ router.get('/', async (req, res) => {
         // Lọc theo danh mục phụ (Phân loại: Áo phông, Áo polo, v.v)
         if (subCategory) {
             filter.subCategory = subCategory;
+        }
+
+        // Lọc theo Size (sizes là mảng trong DB)
+        if (size) {
+            filter.sizes = { $in: [size] };
+        }
+
+        // Lọc theo Màu sắc (colors là mảng trong DB)
+        if (color) {
+            filter.colors = { $in: [color] };
+        }
+
+        // Lọc theo Khoảng giá
+        if (minPrice || maxPrice) {
+            filter.price = {};
+            if (minPrice) filter.price.$gte = Number(minPrice);
+            if (maxPrice) filter.price.$lte = Number(maxPrice);
         }
 
         // Lọc theo cờ Sản phẩm mới (dành cho Tab SẢN PHẨM MỚI)

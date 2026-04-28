@@ -1213,8 +1213,83 @@ document.addEventListener('componentsLoaded', () => {
         }
     };
 
-    // Khởi tạo tải sản phẩm
+    // --- BỘ LỌC SIDEBAR (Size, Màu, Giá) ---
+    const bindFilterEvents = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 1. Xử lý Lọc Size
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            // Đánh dấu active nếu URL đã có size này
+            if (urlParams.get('size') === btn.innerText) btn.classList.add('active');
+
+            btn.addEventListener('click', () => {
+                const isActive = btn.classList.contains('active');
+                document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                
+                if (!isActive) {
+                    btn.classList.add('active');
+                    urlParams.set('size', btn.innerText);
+                } else {
+                    urlParams.delete('size'); // Bỏ chọn nếu nhấn lại
+                }
+                updateUrlAndReload(urlParams);
+            });
+        });
+
+        // 2. Xử lý Lọc Màu sắc
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            const colorTitle = btn.getAttribute('title');
+            if (urlParams.get('color') === colorTitle) btn.classList.add('active');
+
+            btn.addEventListener('click', () => {
+                const isActive = btn.classList.contains('active');
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                
+                if (!isActive) {
+                    btn.classList.add('active');
+                    urlParams.set('color', colorTitle);
+                } else {
+                    urlParams.delete('color');
+                }
+                updateUrlAndReload(urlParams);
+            });
+        });
+
+        // 3. Xử lý Khoảng giá (Dùng sự kiện change để tránh lag)
+        const minPriceInput = document.getElementById('min-price');
+        const maxPriceInput = document.getElementById('max-price');
+
+        if (minPriceInput) {
+            minPriceInput.value = urlParams.get('minPrice') || '';
+            minPriceInput.addEventListener('change', () => {
+                if (minPriceInput.value) urlParams.set('minPrice', minPriceInput.value.replace(/[^0-9]/g, ''));
+                else urlParams.delete('minPrice');
+                updateUrlAndReload(urlParams);
+            });
+        }
+        if (maxPriceInput) {
+            maxPriceInput.value = urlParams.get('maxPrice') || '';
+            maxPriceInput.addEventListener('change', () => {
+                if (maxPriceInput.value) urlParams.set('maxPrice', maxPriceInput.value.replace(/[^0-9]/g, ''));
+                else urlParams.delete('maxPrice');
+                updateUrlAndReload(urlParams);
+            });
+        }
+    };
+
+    const updateUrlAndReload = (params) => {
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        window.loadProducts();
+    };
+
+    // Khởi tạo tải sản phẩm và gắn sự kiện lọc
     loadProducts();
+    
+    // Đợi 1 chút để Sidebar (component) kịp render mới gắn sự kiện được
+    document.addEventListener('componentsLoaded', () => {
+        bindFilterEvents();
+    });
 
     // Sticky Menu Logic
     const handleStickyMenu = () => {
