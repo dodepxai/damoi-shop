@@ -14,16 +14,16 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; background-color: #f7f7f7; color: #333; margin: 0; padding: 0; }
         
-        /* Header Checkout (Shared with checkout.html) */
-        .checkout-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 130px; background: #fff; border-bottom: 1px solid #eee; margin-bottom: 40px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.03);}
-        .nav-brand-logo { width: 175px; height: 80px; overflow: hidden; position: relative; display: block; flex-shrink: 0; text-decoration: none; background: transparent !important; }
-        .nav-brand-logo img { position: absolute; height: 170px; top: 40%; transform: translateY(-50%); left: -70px; mix-blend-mode: darken; pointer-events: none; max-width: none; }
-        .checkout-steps { display: flex; align-items: center; gap: 25px; font-weight: 600; font-size: 18px; color: #aaa; }
+        /* Header Checkout */
+        .checkout-header { background: #fff; border-bottom: 1px solid #eee; margin-bottom: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.03); height: 60px; display: flex; align-items: center; }
+        .checkout-header .container { display: flex !important; align-items: center !important; justify-content: center !important; width: 100%; position: relative; max-width: 1360px; margin: 0 auto; padding: 0 20px; }
+        .checkout-steps { display: flex; align-items: center; gap: 18px; font-weight: 600; font-size: 15px; color: #aaa; }
         .checkout-step { display: flex; align-items: center; gap: 10px; }
         .checkout-step.active { color: #1e88e5; }
-        .checkout-step-number { width: 32px; height: 32px; border-radius: 50%; background: #eee; color: #999; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600;}
+        .checkout-step-number { width: 28px; height: 28px; border-radius: 50%; background: #eee; color: #999; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;}
         .checkout-step.active .checkout-step-number { background: #1e88e5; color: #fff; }
-        .checkout-step-divider { width: 80px; height: 1px; background: #eee; }
+        .checkout-step-divider { width: 40px; height: 1px; background: #eee; }
+        .continue-shopping { color: #333; font-weight: 600; text-decoration: none; font-size: 15px; display: flex; align-items: center; gap: 8px; position: absolute; right: 20px;}
 
         .success-container { max-width: 800px; margin: 0 auto 40px auto; padding: 0 20px; }
         
@@ -92,17 +92,16 @@
 <body>
 
     <header class="checkout-header">
-        <a href="../index.html" class="nav-brand-logo">
-            <img src="../images/logo.png" alt="DAMOI">
-        </a>
-        <div class="checkout-steps">
-            <div class="checkout-step"><div class="checkout-step-number">1</div> Giỏ hàng</div>
-            <div class="checkout-step-divider"></div>
-            <div class="checkout-step"><div class="checkout-step-number">2</div> Thanh toán</div>
-            <div class="checkout-step-divider"></div>
-            <div class="checkout-step active"><div class="checkout-step-number">3</div> Hoàn tất</div>
+        <div class="container">
+            <div class="checkout-steps">
+                <div class="checkout-step"><div class="checkout-step-number">1</div> Giỏ hàng</div>
+                <div class="checkout-step-divider"></div>
+                <div class="checkout-step"><div class="checkout-step-number">2</div> Thanh toán</div>
+                <div class="checkout-step-divider"></div>
+                <div class="checkout-step active"><div class="checkout-step-number">3</div> Hoàn tất</div>
+            </div>
+            <a href="../index.html" class="continue-shopping">TIẾP TỤC MUA SẮM <i class="fa-solid fa-arrow-rotate-left"></i></a>
         </div>
-        <div style="width: 100px;"></div>
     </header>
 
     <div class="success-container">
@@ -163,22 +162,29 @@
     <script src="../js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
-            if (!orderInfo) return;
+            let orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
+            if (!orderInfo) {
+                orderInfo = {
+                    orderId: "DMF123456789",
+                    shippingAddress: { fullName: "Nguyễn Văn Anh", address: "123 Đường Láng, Quận Đống Đa, Hà Nội" },
+                    paymentMethod: "cod",
+                    totalPrice: 550000,
+                    orderItems: [{ qty: 2 }]
+                };
+            }
 
-            const maskString = (str, visibleCount = 1) => {
-                if (!str) return '--';
-                if (str.length <= visibleCount) return str;
-                return str.substring(0, visibleCount) + '*****';
+            const maskString = (str) => {
+                if (!str || str === '--') return '--';
+                if (str.length <= 4) return str[0] + '***' + str[str.length-1];
+                return str.substring(0, 3) + '...' + str.substring(str.length - 2);
             };
 
             const maskAddress = (address) => {
-                if (!address) return '--';
+                if (!address || address === '--') return '--';
                 const parts = address.split(',');
-                if (parts.length < 4) return address;
-                let city = parts[parts.length - 1].trim();
-                city = city.replace(/^Thành phố\s+/i, '').replace(/^Tỉnh\s+/i, '');
-                return '***, ***, ***, ' + city;
+                const city = parts[parts.length - 1].trim();
+                const detail = parts[0].trim();
+                return detail.substring(0, 5) + '***, ' + city;
             };
 
             document.getElementById('order-id').innerHTML = `${orderInfo.orderId} <i class="fa-regular fa-copy copy-btn" onclick="copyId('${orderInfo.orderId}')"></i>`;
@@ -187,15 +193,17 @@
             const address = orderInfo.shippingAddress?.address || orderInfo.customer?.address || '--';
             document.getElementById('order-address').innerText = maskAddress(address);
             
-            let payText = "Thanh toán khi nhận hàng (COD)";
-            if (orderInfo.paymentMethod === 'vnpay') payText = "Cổng thanh toán VNPAY";
-            if (orderInfo.paymentMethod === 'shopeepay') payText = "Ví điện tử ShopeePay";
-            document.getElementById('payment-method').innerText = payText;
+            document.getElementById('payment-method').innerText = (orderInfo.paymentMethod === 'vnpay' ? "Cổng thanh toán VNPAY" : (orderInfo.paymentMethod === 'shopeepay' ? "Ví ShopeePay" : "Thanh toán khi nhận hàng (COD)"));
 
             const formatMoney = (val) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0).replace('₫', ' ₫');
             document.getElementById('total-amount').innerText = formatMoney(orderInfo.totalPrice);
             const totalQty = (orderInfo.orderItems || []).reduce((sum, item) => sum + (item.qty || 1), 0);
             document.getElementById('item-count').innerText = `(${totalQty} sản phẩm)`;
+
+            setTimeout(() => {
+                createFireworkBurst();
+                setInterval(createFireworkBurst, 1200);
+            }, 300);
         });
 
         function copyId(id) {
@@ -205,43 +213,65 @@
 
         const canvas = document.getElementById('confetti');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
         let particles = [];
-        const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-        for (let i = 0; i < 150; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height - canvas.height,
-                size: Math.random() * 7 + 3,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                velocity: { x: (Math.random() - 0.5) * 3, y: Math.random() * 3 + 2 }
-            });
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.size = Math.random() * 5 + 2;
+                this.speed = Math.random() * 15 + 5;
+                this.angle = Math.random() * Math.PI * 2;
+                this.velocity = { x: Math.cos(this.angle) * this.speed, y: Math.sin(this.angle) * this.speed };
+                this.gravity = 0.2; this.alpha = 1; this.decay = Math.random() * 0.015 + 0.01;
+                this.sparkle = Math.random() > 0.5;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                if (this.sparkle && Math.random() > 0.8) ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                // Glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.restore();
+            }
+            update() {
+                this.velocity.y += this.gravity;
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.velocity.x *= 0.98;
+                this.velocity.y *= 0.98;
+                this.alpha -= this.decay;
+            }
         }
+
+        function createFireworkBurst() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * (canvas.height * 0.6);
+            const hues = [0, 45, 120, 200, 280, 330];
+            const hue = hues[Math.floor(Math.random() * hues.length)];
+            const color = `hsl(${hue}, 100%, 60%)`;
+            for (let i = 0; i < 60; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.x += p.velocity.x;
-                p.y += p.velocity.y;
-                if (p.y > canvas.height) p.y = -10;
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-            });
+            particles = particles.filter(p => p.alpha > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(render);
         }
         render();
 
         function handleTrackOrder(e) {
             e.preventDefault();
-            const orderInfo = JSON.parse(sessionStorage.getItem('last_order_details'));
-            if (orderInfo && orderInfo.autoRegister) {
-                const userSession = {
-                    phone: orderInfo.shippingAddress?.phone || '09xxxxxxxxx',
-                    fullName: orderInfo.shippingAddress?.fullName || 'Khách hàng mới',
-                    tier: 'Green',
-                    points: 0
-                };
-                localStorage.setItem('damoi_user', JSON.stringify(userSession));
             window.location.href = '/pages/my-profile.html';
         }
     </script>

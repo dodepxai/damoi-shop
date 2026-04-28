@@ -4,9 +4,33 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Cấu hình lưu trữ cho multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+// Logger đơn giản để theo dõi request (Đưa lên đầu)
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
 
 // Kết nối Cơ sở dữ liệu MongoDB
 const connectDB = async () => {
@@ -54,13 +78,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Serve static files (HTML, CSS, JS ảnh của frontend)
 // Thay vì chạy file HTML bằng Live Server, từ nay Server Node.js sẽ đảm nhận việc load file HTML lên
 app.use(express.static(path.join(__dirname)));
-
-// Import và sử dụng các Routes API
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
 // Route Upload ảnh: nhận base64, lưu sản phẩm vào thư mục theo SKU
-const fs = require('fs');
 app.post('/api/upload', (req, res) => {
     try {
         const { imageData, fileName, sku } = req.body;
@@ -82,19 +105,31 @@ app.post('/api/upload', (req, res) => {
             fs.mkdirSync(productDir, { recursive: true });
         }
 
-        // Tạo tên file an toàn + timestamp để tránh lỗi cache trình duyệt khi ghi đè
         const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
         const uniqueName = Date.now() + '_' + safeName;
         const filePath = path.join(productDir, uniqueName);
 
         fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
-        // Trả về đường dẫn chuẩn để lưu vào database
         const relativePath = `images/products/${folderName}/${uniqueName}`;
         res.json({ imageUrl: relativePath });
     } catch (error) {
         console.error('Lỗi upload ảnh:', error);
         res.status(500).json({ message: 'Lỗi khi lưu ảnh', error: error.message });
+    }
+});
+
+// API Upload nhiều ảnh cho bài Đánh giá (Review)
+app.post('/api/upload-review-media', upload.array('images', 5), (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.json({ imageUrls: [] });
+        }
+        const fileUrls = req.files.map(file => `/uploads/${file.filename}`);
+        res.json({ imageUrls: fileUrls });
+    } catch (error) {
+        console.error('Lỗi upload review media:', error);
+        res.status(500).json({ message: 'Lỗi khi lưu ảnh đánh giá' });
     }
 });
 
@@ -109,6 +144,9 @@ app.use('/api/messages', messageRoutes);
 
 const voucherRoutes = require('./routes/vouchers');
 app.use('/api/vouchers', voucherRoutes);
+
+const reviewRoutes = require('./routes/reviews');
+app.use('/api/reviews', reviewRoutes);
 
 // API thống kê Dashboard Admin
 app.get('/api/stats', async (req, res) => {
@@ -145,6 +183,14 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
+// Catch-all 404 cho riêng các đường dẫn /api
+app.use('/api', (req, res) => {
+    console.log(`[404 API] ${req.method} ${req.originalUrl}`);
+    res.status(404).json({ 
+        message: `Đường dẫn API không tồn tại hoặc sai phương thức: ${req.method} ${req.originalUrl}` 
+    });
+});
+
 // Route trang chủ mặc định sẽ trả về file index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
@@ -165,6 +211,15 @@ app.get('/admin', (req, res) => {
 
 app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages', 'admin.html'));
+});
+
+// Error handler toàn cục để luôn trả về JSON
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err);
+    res.status(500).json({ 
+        message: 'Lỗi Server Nội Bộ', 
+        error: err.message 
+    });
 });
 
 // Khởi động server

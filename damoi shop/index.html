@@ -37,14 +37,21 @@
         </div>
     </nav>
 
-    <!-- Category Banner Section (Dynamic) -->
+    <!-- Category Banner Section (Dynamic Slider) -->
     <section class="category-banner container" id="dynamic-banner" style="display: none;">
         <div class="banner-grid">
             <div class="side-banner-left">
                 <img id="banner-img-left" src="images/logobannernam.jpg" alt="Left Banner" class="side-img">
             </div>
             <div class="main-banner-center">
-                <img id="banner-img" src="" alt="Category Banner">
+                <div class="slider-container" id="main-slider">
+                    <div class="slider-wrapper" id="slider-wrapper">
+                        <!-- Slides injected via main.js -->
+                    </div>
+                    <button class="slider-btn prev" onclick="window.moveSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="slider-btn next" onclick="window.moveSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="slider-dots" id="slider-dots"></div>
+                </div>
             </div>
             <div class="side-banner-right">
                 <img id="banner-img-right" src="images/logobannernam2.jpg" alt="Right Banner" class="side-img">

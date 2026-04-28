@@ -27,6 +27,14 @@ const voucherSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    isNewbieOnly: {
+        type: Boolean,
+        default: false
+    },
+    pointsRequired: {
+        type: Number,
+        default: 0 // Nếu > 0 thì đây là voucher đổi bằng điểm
     }
 }, { timestamps: true });
 

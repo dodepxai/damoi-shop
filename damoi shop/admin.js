@@ -75,7 +75,9 @@ function showSection(sectionId) {
         customers: ['Khách Hàng', 'Quản lý tài khoản khách'],
         messages: ['Tin Nhắn', 'Trò chuyện với khách hàng'],
         vouchers: ['Mã Giảm Giá', 'Quản lý chương trình ưu đãi'],
-        shipping: ['Vận Chuyển', 'Cấu hình phí ship và đối tác']
+        shipping: ['Vận Chuyển', 'Cấu hình phí ship và đối tác'],
+        membership: ['Hội Viên', 'Quản lý điểm thưởng và phân hạng'],
+        reviews: ['Đánh giá', 'Quản lý nhận xét của khách hàng']
     };
     const [title, breadcrumb] = titles[sectionId] || ['Admin', ''];
     document.getElementById('page-title').textContent = title;
@@ -92,6 +94,8 @@ function showSection(sectionId) {
     }
     else if (sectionId === 'vouchers') fetchVouchers();
     else if (sectionId === 'shipping') initShippingSection();
+    else if (sectionId === 'membership') fetchMembership();
+    else if (sectionId === 'reviews') fetchReviewsAdmin();
 
     // Stop polling if not in messages
     if (sectionId !== 'messages') stopChatPolling();
@@ -1008,7 +1012,10 @@ async function fetchCustomers() {
 
         customers.forEach(user => {
             const tr = document.createElement('tr');
+            const customerId = user._id ? '#' + String(user._id).slice(-8).toUpperCase() : '–';
+            
             tr.innerHTML = `
+                <td style="font-family: monospace; font-weight: 700; color: var(--accent); font-size: 13px;">${customerId}</td>
                 <td><strong>${user.fullName}</strong></td>
                 <td>${user.email}</td>
                 <td>${user.phone || '–'}</td>
@@ -1349,6 +1356,8 @@ function openVoucherAdminModal() {
 function closeVoucherAdminModal() {
     document.getElementById('voucherAdminModal').classList.remove('open');
     document.getElementById('voucherForm').reset();
+    document.getElementById('vId').value = '';
+    document.getElementById('voucherModalTitle').innerText = 'Tạo Mã Giảm Giá Mới';
 }
 
 function handleVoucherModalBgClick(e) {
@@ -1356,6 +1365,8 @@ function handleVoucherModalBgClick(e) {
 }
 
 // ======================== VOUCHERS ========================
+let allAdminVouchers = [];
+
 async function fetchVouchers() {
     const listBody = document.getElementById('admin-voucher-list');
     if (!listBody) return;
@@ -1364,35 +1375,9 @@ async function fetchVouchers() {
 
     try {
         const response = await fetch(VOUCHER_API_URL);
-        const vouchers = await response.json();
+        allAdminVouchers = await response.json();
 
-        listBody.innerHTML = '';
-        const countEl = document.getElementById('vouchers-count');
-        if (countEl) countEl.textContent = `(${vouchers.length} mã)`;
-
-        if (vouchers.length === 0) {
-            listBody.innerHTML = '<tr class="loading-row"><td colspan="6">Chưa có mã giảm giá nào.</td></tr>';
-            return;
-        }
-
-        vouchers.forEach(voucher => {
-            const tr = document.createElement('tr');
-            const expDate = new Date(voucher.expiryDate);
-            const isExpired = expDate < new Date();
-            
-            tr.innerHTML = `
-                <td><strong style="color: var(--accent); font-family: monospace; font-size: 15px;">${voucher.code}</strong></td>
-                <td style="font-size: 13px;">${voucher.description || 'Không có mô tả'}</td>
-                <td style="color: var(--green); font-weight: 600;">${fmt(voucher.discountAmount)}</td>
-                <td>${voucher.minOrderValue > 0 ? fmt(voucher.minOrderValue) : 'Không giới hạn'}</td>
-                <td style="${isExpired ? 'color: var(--red);' : ''}">${expDate.toLocaleDateString('vi-VN')} ${isExpired ? '(Hết hạn)' : ''}</td>
-                <td>
-                    <button class="btn-icon delete" onclick="deleteVoucher('${voucher._id}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            `;
-            listBody.appendChild(tr);
-        });
-
+        renderAdminVoucherList(allAdminVouchers);
     } catch (error) {
         console.error("Lỗi tải vouchers admin:", error);
         listBody.innerHTML = '<tr class="loading-row"><td colspan="6" style="color: var(--red);">Lỗi tải dữ liệu.</td></tr>';
@@ -1408,18 +1393,23 @@ document.getElementById('voucherForm').addEventListener('submit', async (e) => {
         discountAmount: Number(document.getElementById('vDiscount').value.replace(/\./g, '')),
         minOrderValue: Number(document.getElementById('vMinOrder').value.replace(/\./g, '')),
         expiryDate: document.getElementById('vExpiry').value,
-        description: document.getElementById('vDesc').value
+        description: document.getElementById('vDesc').value,
+        pointsRequired: Number(document.getElementById('vPointsRequired').value) || 0
     };
 
+    const vId = document.getElementById('vId').value;
+    const method = vId ? 'PUT' : 'POST';
+    const url = vId ? `${VOUCHER_API_URL}/${vId}` : VOUCHER_API_URL;
+
     try {
-        const res = await fetch(VOUCHER_API_URL, {
-            method: 'POST',
+        const res = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
         if (res.ok) {
-            showToast('✅ Đã tạo mã giảm giá thành công!');
+            showToast(vId ? '✅ Đã cập nhật voucher thành công!' : '✅ Đã tạo mã giảm giá thành công!');
             closeVoucherAdminModal();
             fetchVouchers();
         } else {
@@ -1498,3 +1488,273 @@ function saveShippingConfig() {
     localStorage.setItem('damoi_shipping_config', JSON.stringify(config));
     showToast('✅ Đã lưu cấu hình vận chuyển thành công!');
 }
+
+// ================== MEMBERSHIP ==================
+let allMembers = [];
+
+async function fetchMembership() {
+    const listBody = document.getElementById('admin-membership-list');
+    if(!listBody) return;
+    listBody.innerHTML = '<tr class="loading-row"><td colspan="5">Đang tải danh sách hội viên...</td></tr>';
+
+    try {
+        const response = await fetch(USER_API_URL);
+        const users = await response.json();
+        allMembers = users.filter(u => u.role !== 'admin'); // Chỉ hiện khách hàng
+
+        renderMembershipList(allMembers);
+    } catch (error) {
+        console.error("Lỗi tải hội viên:", error);
+        listBody.innerHTML = '<tr class="loading-row"><td colspan="5" style="color: var(--red);">Lỗi tải dữ liệu hội viên.</td></tr>';
+    }
+}
+
+function filterMembers() {
+    const q = document.getElementById('member-search').value.toLowerCase();
+    const filtered = allMembers.filter(m => 
+        (m.fullName || '').toLowerCase().includes(q) || 
+        (m.phone || '').includes(q) ||
+        (m.email || '').toLowerCase().includes(q)
+    );
+    renderMembershipList(filtered);
+}
+
+function renderMembershipList(members) {
+    const listBody = document.getElementById('admin-membership-list');
+    if(!listBody) return;
+    listBody.innerHTML = '';
+
+    if (members.length === 0) {
+        listBody.innerHTML = '<tr class="loading-row"><td colspan="5">Không tìm thấy hội viên nào.</td></tr>';
+        return;
+    }
+
+    members.forEach(member => {
+        const points = member.points || 0;
+        let tierLabel = '';
+        let tierClass = '';
+
+        if (points >= 1000) {
+            tierLabel = 'PLATINUM';
+            tierClass = 'badge-cancelled'; // Đen
+        } else if (points >= 300) {
+            tierLabel = 'GOLD';
+            tierClass = 'badge-pending'; // Vàng
+        } else {
+            tierLabel = 'GREEN';
+            tierClass = 'badge-delivered'; // Xanh lá
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><strong>${member.fullName || 'Chưa đặt tên'}</strong></td>
+            <td>
+                <div style="font-size: 13px;">${member.phone || 'N/A'}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">${member.email || ''}</div>
+            </td>
+            <td>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="number" value="${points}" id="points-${member._id}" style="width: 80px; padding: 5px; border: 1px solid var(--border); border-radius: 4px; background: #fff; color: #333;">
+                    <button class="btn-icon" onclick="updateUserPoints('${member._id}')" title="Lưu điểm" style="color: var(--green);"><i class="fa-solid fa-check"></i></button>
+                </div>
+            </td>
+            <td><span class="badge ${tierClass}">${tierLabel}</span></td>
+            <td>
+                <button class="btn-primary" onclick="showCustomerHistory('${member._id}')" style="font-size: 11px; padding: 5px 10px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn
+                </button>
+            </td>
+        `;
+        listBody.appendChild(tr);
+    });
+}
+
+async function updateUserPoints(userId) {
+    const points = document.getElementById(`points-${userId}`).value;
+    
+    try {
+        const response = await fetch(`${USER_API_URL}/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ points: Number(points) })
+        });
+
+        if (response.ok) {
+            showToast('Đã cập nhật điểm và hạng thẻ!');
+            fetchMembership();
+        } else {
+            showToast('Lỗi khi cập nhật điểm!', true);
+        }
+    } catch (error) {
+        showToast('Lỗi hệ thống!', true);
+    }
+}
+
+function showCustomerHistory(userId) {
+    const user = allMembers.find(m => m._id === userId);
+    if(user && typeof viewCustomerOrders === 'function') {
+        viewCustomerOrders(userId, user.fullName || user.phone);
+    } else {
+        showSection('customers');
+    }
+}
+
+function renderAdminVoucherList(vouchers) {
+    const listBody = document.getElementById('admin-voucher-list');
+    listBody.innerHTML = '';
+    
+    const countEl = document.getElementById('vouchers-count');
+    if (countEl) countEl.textContent = `(${vouchers.length} mã)`;
+
+    if (vouchers.length === 0) {
+        listBody.innerHTML = '<tr class="loading-row"><td colspan="6">Không tìm thấy mã nào.</td></tr>';
+        return;
+    }
+
+    vouchers.forEach(voucher => {
+        const tr = document.createElement('tr');
+        const expDate = new Date(voucher.expiryDate);
+        const isExpired = expDate < new Date();
+        
+        tr.innerHTML = `
+            <td><strong style="color: var(--accent); font-family: monospace; font-size: 15px;">${voucher.code}</strong></td>
+            <td style="font-size: 13px;">${voucher.description || 'Không có mô tả'}</td>
+            <td style="color: var(--green); font-weight: 600;">${fmt(voucher.discountAmount)}</td>
+            <td>${voucher.minOrderValue > 0 ? fmt(voucher.minOrderValue) : 'Không giới hạn'}</td>
+            <td style="${isExpired ? 'color: var(--red);' : ''}">${expDate.toLocaleDateString('vi-VN')} ${isExpired ? '(Hết hạn)' : ''}</td>
+            <td>
+                <div class="btn-actions">
+                    <button class="btn-icon edit" onclick="editVoucher('${voucher._id}')" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon delete" onclick="deleteVoucher('${voucher._id}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        `;
+        listBody.appendChild(tr);
+    });
+}
+
+function filterVouchersAdmin() {
+    const q = document.getElementById('voucher-search').value.toLowerCase();
+    const filtered = allAdminVouchers.filter(v => 
+        v.code.toLowerCase().includes(q) || 
+        (v.description || '').toLowerCase().includes(q)
+    );
+    renderAdminVoucherList(filtered);
+}
+
+function editVoucher(id) {
+    const voucher = allAdminVouchers.find(v => v._id === id);
+    if(!voucher) return;
+
+    document.getElementById('voucherModalTitle').innerText = 'Chỉnh Sửa Mã Giảm Giá';
+    document.getElementById('vId').value = voucher._id;
+    document.getElementById('vCode').value = voucher.code;
+    document.getElementById('vDiscount').value = fmt(voucher.discountAmount).replace(' ₫', '').replace(/\./g, '');
+    document.getElementById('vMinOrder').value = fmt(voucher.minOrderValue).replace(' ₫', '').replace(/\./g, '');
+    document.getElementById('vDesc').value = voucher.description;
+    document.getElementById('vPointsRequired').value = voucher.pointsRequired || 0;
+    
+    // Format date YYYY-MM-DD
+    const d = new Date(voucher.expiryDate);
+    const dateStr = d.toISOString().split('T')[0];
+    document.getElementById('vExpiry').value = dateStr;
+
+    openVoucherAdminModal();
+}
+
+// ================== REVIEWS MANAGEMENT ==================
+// ================== REVIEWS MANAGEMENT ==================
+async function fetchReviewsAdmin() {
+    const listBody = document.getElementById('admin-review-list');
+    if (!listBody) return;
+
+    try {
+        const res = await fetch('/api/reviews');
+        if (!res.ok) throw new Error('Lỗi tải dữ liệu từ Server');
+        const reviews = await res.json();
+        
+        const countBadge = document.getElementById('reviews-count-admin');
+        if (countBadge) countBadge.textContent = `Tổng số: ${reviews.length}`;
+
+        if (reviews.length === 0) {
+            listBody.innerHTML = '<tr class="loading-row"><td colspan="7">Chưa có đánh giá nào trên hệ thống</td></tr>';
+            return;
+        }
+
+        listBody.innerHTML = reviews.map((r) => `
+            <tr>
+                <td><strong style="color:var(--accent); font-size:13px;">${r.userName || 'Ẩn danh'}</strong></td>
+                <td><code style="background:rgba(167,139,250,0.1); padding:4px 8px; border-radius:6px; color:var(--accent); font-size:11px;">${r.productId ? r.productId.slice(-8) : 'N/A'}</code></td>
+                <td><span style="color:#ffca28; letter-spacing: 2px;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></td>
+                <td><div style="max-width:250px; white-space:normal; line-height:1.4; font-size:13px; color:#ddd;">${r.comment}</div></td>
+                <td>
+                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                        ${r.media && r.media.length > 0 ? r.media.map(m => `
+                            <img src="${m}" style="width:40px; height:40px; object-fit:cover; border-radius:4px; cursor:pointer; border:1px solid #444;" 
+                                 onclick="window.openImageDetail('${m}')" title="Xem ảnh lớn">
+                        `).join('') : '<span style="color:#666; font-size:11px;">Không có media</span>'}
+                    </div>
+                </td>
+                <td><span style="font-size:12px; color:#888;">${new Date(r.createdAt).toLocaleDateString('vi-VN')}</span></td>
+                <td>
+                    <button class="btn-action delete" onclick="deleteReviewAdmin('${r._id}')" style="background:rgba(239,68,68,0.1); color:#ef4444; border:none; padding:8px; border-radius:8px; cursor:pointer;" title="Xóa đánh giá">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error("Lỗi lấy review admin:", err);
+    }
+}
+
+// Thêm tính năng xem ảnh lớn cho Admin
+window.openImageDetail = function(src) {
+    const modal = document.getElementById('imageDetailModal');
+    const img = document.getElementById('detail-full-image');
+    if (modal && img) {
+        img.src = src;
+        modal.style.display = 'flex';
+        // Đảm bảo body không bị cuộn khi đang xem ảnh
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeImageDetailModal = function() {
+    const modal = document.getElementById('imageDetailModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+};
+
+// Đóng khi nhấn vào vùng đen bên ngoài ảnh
+window.onclick = function(event) {
+    const modal = document.getElementById('imageDetailModal');
+    if (event.target == modal) {
+        closeImageDetailModal();
+    }
+};
+
+async function deleteReviewAdmin(id) {
+    if (!confirm('Bạn có chắc chắn muốn xóa đánh giá này khỏi DATABASE không?')) return;
+
+    try {
+        const res = await fetch(`/api/reviews/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        
+        showToast(data.message || 'Đã xóa đánh giá thành công!');
+        fetchReviewsAdmin();
+    } catch (err) {
+        console.error("Lỗi xóa review:", err);
+        showToast('Lỗi khi xóa đánh giá!', true);
+    }
+}
+
+// TỰ ĐỘNG CẬP NHẬT: Quét dữ liệu mỗi 5 giây để đồng bộ tức thì
+setInterval(() => {
+    const currentSection = document.querySelector('.section.active');
+    if (currentSection && currentSection.id === 'section-reviews') {
+        fetchReviewsAdmin();
+    }
+}, 5000);

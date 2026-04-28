@@ -36,6 +36,10 @@ const orderSchema = new mongoose.Schema({
         required: true,
         default: 0.0
     },
+    voucherCode: {
+        type: String,
+        default: null
+    },
     status: {
         type: String,
         enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Chờ xử lý', 'Đang giao hàng', 'Đã giao hàng', 'Đã hủy'],

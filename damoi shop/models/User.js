@@ -28,6 +28,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    gender: {
+        type: String,
+        enum: ['Nam', 'Nữ', 'Khác', '-'],
+        default: '-'
+    },
+    dob: {
+        type: String, // String for simplicity in this project (YYYY-MM-DD)
+        default: '-'
+    },
     role: {
         type: String,
         enum: ['customer', 'admin'],
@@ -35,6 +44,14 @@ const userSchema = new mongoose.Schema({
     },
     twoFactorSecret: {
         type: String // Key Google Authenticator
+    },
+    points: {
+        type: Number,
+        default: 100 // Tặng 100 điểm khi đăng ký xong
+    },
+    vouchers: {
+        type: [String], // Danh sách các mã code đã sở hữu/đổi
+        default: []
     }
 }, { timestamps: true });
 

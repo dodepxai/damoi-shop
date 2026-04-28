@@ -39,7 +39,9 @@ router.post('/register', async (req, res) => {
                 _id: user._id,
                 fullName: user.fullName,
                 email: user.email,
-                role: user.role
+                phone: user.phone,
+                role: user.role,
+                points: user.points
             });
         } else {
             res.status(400).json({ message: 'Lỗi không xác định khi tạo tài khoản' });
@@ -69,7 +71,8 @@ router.post('/login', async (req, res) => {
                 fullName: user.fullName,
                 email: user.email,
                 phone: user.phone,
-                role: user.role
+                role: user.role,
+                points: user.points
             });
         } else {
             res.status(401).json({ message: 'Số điện thoại hoặc Mật khẩu không đúng!' });
@@ -193,6 +196,58 @@ router.delete('/:id', async (req, res) => {
         res.json({ message: 'Đã xóa khách hàng thành công' });
     } catch (error) {
         res.status(500).json({ message: 'Lỗi server khi xóa', error: error.message });
+    }
+});
+
+// 5. Cập nhật hồ sơ Khách hàng
+router.put('/:id', async (req, res) => {
+    try {
+        const mongoose = require('mongoose');
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'ID người dùng không hợp lệ' });
+        }
+
+        const { fullName, email, gender, dob, phone } = req.body;
+        const user = await User.findById(req.params.id);
+
+        if (user) {
+            // Kiểm tra trùng SĐT nếu thay đổi
+            if (phone && phone !== user.phone) {
+                const phoneExists = await User.findOne({ phone, _id: { $ne: user._id } });
+                if (phoneExists) {
+                    return res.status(400).json({ message: 'Số điện thoại này đã được sử dụng bởi tài khoản khác!' });
+                }
+                user.phone = phone;
+            }
+
+            // Kiểm tra trùng Email nếu thay đổi
+            if (email && email !== user.email) {
+                const emailExists = await User.findOne({ email, _id: { $ne: user._id } });
+                if (emailExists) {
+                    return res.status(400).json({ message: 'Email này đã được sử dụng bởi tài khoản khác!' });
+                }
+                user.email = email;
+            }
+
+            user.fullName = fullName || user.fullName;
+            user.gender = gender || user.gender;
+            user.dob = dob || user.dob; // Đã bỏ giới hạn cập nhật 1 lần theo yêu cầu
+
+            const updatedUser = await user.save();
+            res.json({
+                _id: updatedUser._id,
+                fullName: updatedUser.fullName,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                gender: updatedUser.gender,
+                dob: updatedUser.dob,
+                role: updatedUser.role
+            });
+        } else {
+            res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi server khi cập nhật profile', error: error.message });
     }
 });
 

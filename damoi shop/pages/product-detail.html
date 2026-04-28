@@ -22,12 +22,11 @@
     <nav class="breadcrumb-bar" id="breadcrumb-bar">
         <div class="container breadcrumb-content-wrap">
             <a href="../index.html">Trang chủ</a>
-            <span>|</span>
+            <span class="bc-sep">/</span>
             <a href="#" id="breadcrumb-category">Danh mục</a>
-            <span>|</span>
+            <span class="bc-sep">/</span>
             <a href="#" id="breadcrumb-subcategory">Sản phẩm</a>
-            <span>|</span>
-            <span id="breadcrumb-product-name" class="bc-current">...</span>
+            <span id="breadcrumb-product-name" class="bc-current" style="margin-left: 8px;">...</span>
         </div>
     </nav>
 
@@ -46,7 +45,7 @@
                     <!-- Main large image -->
                     <div class="main-image" style="position: relative;">
                         <img id="featured-image" src="https://via.placeholder.com/600x800" alt="Sản phẩm chính">
-                        <button class="image-wishlist-btn" onclick="addToWishlist()" title="Thêm vào yêu thích" style="position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.8); border: 1px solid #ddd; width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #ffffff; font-size: 18px; z-index: 10; transition: all 0.3s ease;">
+                        <button class="image-wishlist-btn" onclick="addToWishlist()" title="Thêm vào yêu thích">
                             <i class="fa-regular fa-heart"></i>
                         </button>
                     </div>
@@ -240,18 +239,20 @@
                     </div>
                     
                     <!-- Bảng viết đánh giá (Mặc định ẩn) -->
-                    <div class="review-form-container" id="review-form-wrapper" style="display: none; margin-bottom: 40px; border: 1px solid #eee; padding: 30px; border-radius: 12px; background: #fafafa;">
+                        <div class="review-form-container" id="review-form-wrapper" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h4 style="margin: 0;">Viết đánh giá của bạn</h4>
                             <button type="button" onclick="toggleReviewForm()" style="background: none; border: none; color: #ffffff; cursor: pointer;"><i class="fa-solid fa-xmark"></i> Đóng</button>
                         </div>
                         <form id="review-form">
-                            <div class="form-group" style="margin-bottom: 15px;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Tên của bạn (*)</label>
-                                <input type="text" id="review-name" required placeholder="Nhập tên..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
+                            <div style="margin-bottom: 20px;">
+                                <label style="margin-bottom: 5px;">Tên của bạn:</label>
+                                <span id="review-name-display" style="font-weight: 700; color: var(--gold-color); font-size: 18px;"></span>
+                                <input type="hidden" id="review-name">
                             </div>
                             <div class="form-group" style="margin-bottom: 15px;">
                                 <label style="display: block; margin-bottom: 8px; font-weight: 500;">Số sao đánh giá (*)</label>
+                                <select id="review-rating" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px;">
                                     <option value="5">5 - Rất Tốt ⭐⭐⭐⭐⭐</option>
                                     <option value="4">4 - Tốt ⭐⭐⭐⭐</option>
                                     <option value="3">3 - Bình Thường ⭐⭐⭐</option>
@@ -261,7 +262,20 @@
                             </div>
                             <div class="form-group" style="margin-bottom: 20px;">
                                 <label style="display: block; margin-bottom: 8px; font-weight: 500;">Cảm nhận của bạn (*)</label>
-                                <textarea id="review-comment" required rows="4" placeholder="Sản phẩm mặc rất hợp..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+                                <textarea id="review-comment" required rows="4" placeholder="Sản phẩm mặc rất hợp..." maxlength="200" oninput="document.getElementById('word-count').innerText = this.value.length + '/200 từ'" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; resize: vertical;"></textarea>
+                                <div id="word-count" style="font-size: 12px; color: #888; text-align: right; margin-top: 5px;">0/200 từ</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Thêm Hình ảnh / Video (Tối đa 5 file)</label>
+                                <div class="upload-container" style="border: 1px dashed #555; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer;" onclick="document.getElementById('review-media').click()">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 24px; color: var(--gold-color);"></i>
+                                    <p style="margin: 5px 0 0; font-size: 13px; color: #aaa;">Nhấn để tải lên hoặc kéo thả</p>
+                                    <input type="file" id="review-media" multiple accept="image/*,video/*" style="display: none;" onchange="handleMediaSelect(this)">
+                                </div>
+                                <div id="media-preview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+                                <p style="font-size: 12px; color: var(--gold-color); margin-top: 10px; font-weight: 600;">
+                                    <i class="fa-solid fa-gift"></i> Nhận ngay +2 điểm tích lũy khi đánh giá có hình ảnh hoặc video!
+                                </p>
                             </div>
                             <button type="submit" class="submit-review-btn">ĐĂNG BÌNH LUẬN</button>
                         </form>
@@ -509,7 +523,7 @@
         function renderReviews(reviews) {
             const list = document.getElementById('reviews-list');
             if(reviews.length === 0) {
-                list.innerHTML = '<p style="color:#666; font-style:italic; padding: 20px 0;">Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét!</p>';
+                list.innerHTML = '<p style="color:#aaa; font-style:italic; padding: 20px 0;">Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét!</p>';
                 return;
             }
             let html = '';
@@ -517,15 +531,15 @@
                 let stars = '⭐'.repeat(r.rating);
                 let date = new Date(r.createdAt || Date.now()).toLocaleDateString('vi-VN');
                 html += `
-                <div style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:15px; border-left: 4px solid #000;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <div style="background:#1a1a1a; padding:20px; border-radius:8px; margin-bottom:15px; border-left: 4px solid var(--gold-color); border: 1px solid #333;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <div>
-                            <strong style="font-size: 15px;">${r.name}</strong> 
+                            <strong style="font-size: 15px; color: #fff;">${r.name}</strong> 
                             <span style="color:#EDB867; font-size:12px; margin-left:10px;">${stars}</span>
                         </div>
-                        <span style="font-size:12px; color:#999;">${date}</span>
+                        <span style="font-size:12px; color:#888;">${date}</span>
                     </div>
-                    <p style="margin:0; color: #ffffff; line-height:1.5; font-size: 14px;">${r.comment}</p>
+                    <p style="margin:0; color: #ccc; line-height:1.6; font-size: 14.5px;">${r.comment}</p>
                 </div>
                 `;
             });
@@ -559,8 +573,41 @@
         }
 
         function toggleReviewForm() {
+            // Kiểm tra đăng nhập
+            const userStr = sessionStorage.getItem('damoi_user') || localStorage.getItem('damoi_user');
+            if (!userStr) {
+                alert("Vui lòng đăng nhập để viết đánh giá!");
+                window.location.href = '/pages/auth.html?redirect=' + encodeURIComponent(window.location.href);
+                return;
+            }
+
+            const userData = JSON.parse(userStr);
             const wrapper = document.getElementById('review-form-wrapper');
+            const nameDisplay = document.getElementById('review-name-display');
+            const nameInput = document.getElementById('review-name');
+
             if (wrapper.style.display === 'none') {
+                // Bước 1: Hiển thị thông tin tạm thời từ bộ nhớ (Sửa lỗi fullName)
+                let tempName = userData.fullName || userData.fullname || userData.username || "Khách hàng";
+                const customerCode = '#' + String(userData._id || '00000000').slice(-8).toUpperCase();
+                
+                if (nameDisplay) nameDisplay.innerText = `${tempName.toUpperCase()} (${customerCode})`;
+                if (nameInput) nameInput.value = tempName;
+
+                // Bước 2: Truy vấn Server để lấy tên thật mới nhất (theo ý của bạn)
+                if (userData._id) {
+                    fetch(`/api/users/${userData._id}`)
+                        .then(res => res.json())
+                        .then(latestData => {
+                            if (latestData && (latestData.fullName || latestData.fullname)) {
+                                const realName = (latestData.fullName || latestData.fullname).toUpperCase();
+                                if (nameDisplay) nameDisplay.innerText = `${realName} (${customerCode})`;
+                                if (nameInput) nameInput.value = realName;
+                            }
+                        })
+                        .catch(err => console.warn("Không thể lấy tên mới nhất từ server:", err));
+                }
+
                 wrapper.style.display = 'block';
                 wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
@@ -568,42 +615,212 @@
             }
         }
 
+        // Xử lý đếm từ
+        const commentArea = document.getElementById('review-comment');
+        if (commentArea) {
+            commentArea.addEventListener('input', function() {
+                const words = this.value.trim().split(/\s+/).filter(w => w.length > 0);
+                const count = words.length;
+                document.getElementById('word-count').innerText = `${count}/200 từ`;
+                if (count > 200) {
+                    this.style.borderColor = 'red';
+                    document.getElementById('word-count').style.color = 'red';
+                } else {
+                    this.style.borderColor = '#ddd';
+                    document.getElementById('word-count').style.color = '#888';
+                }
+            });
+        }
+
+        // Xem trước ảnh/video
+        function handleMediaSelect(input) {
+            const preview = document.getElementById('media-preview');
+            preview.innerHTML = '';
+            if (input.files) {
+                Array.from(input.files).slice(0, 5).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.style.cssText = 'width: 60px; height: 60px; border-radius: 4px; overflow: hidden; border: 1px solid #444;';
+                        if (file.type.startsWith('image/')) {
+                            div.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+                        } else {
+                            div.innerHTML = `<div style="width:100%; height:100%; background:#222; display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-video" style="color:white; font-size:12px;"></i></div>`;
+                        }
+                        preview.appendChild(div);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        // Xử lý gửi đánh giá và cộng điểm
+        const reviewForm = document.getElementById('review-form');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const productId = new URLSearchParams(window.location.search).get('id');
+                const words = commentArea.value.trim().split(/\s+/).filter(w => w.length > 0);
+                if (words.length > 200) {
+                    window.showToast("Đánh giá của bạn quá dài (tối đa 200 từ)!", "fa-solid fa-triangle-exclamation");
+                    return;
+                }
+
+                // 1. CHUẨN BỊ FILE MEDIA
+                const mediaInput = document.getElementById('review-media');
+                let mediaUrls = [];
+                
+                if (mediaInput.files && mediaInput.files.length > 0) {
+                    window.showToast("Đang tải ảnh lên...", "fa-solid fa-cloud-arrow-up");
+                    const formData = new FormData();
+                    for (let i = 0; i < mediaInput.files.length; i++) {
+                        formData.append('images', mediaInput.files[i]);
+                    }
+
+                    try {
+                        const uploadRes = await fetch('/api/upload-review-media', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const uploadData = await uploadRes.json();
+                        mediaUrls = uploadData.imageUrls || [];
+                    } catch (err) {
+                        console.error("Lỗi upload media:", err);
+                        window.showToast("Lỗi khi tải ảnh lên!", "fa-solid fa-triangle-exclamation");
+                    }
+                }
+
+                // 2. LẤY THÔNG TIN USER
+                const userRaw = sessionStorage.getItem('damoi_user') || localStorage.getItem('damoi_user');
+                if (!userRaw) {
+                    window.showToast("Vui lòng đăng nhập để đánh giá!", "fa-solid fa-lock");
+                    return;
+                }
+                const userData = JSON.parse(userRaw);
+                const userId = userData._id || userData.id;
+                const userCode = document.getElementById('review-name-display').innerText.match(/\((#.*?)\)/)[1];
+
+                const reviewData = {
+                    productId: productId,
+                    userId: userId,
+                    userName: document.getElementById('review-name-display').innerText,
+                    userCode: userCode,
+                    rating: document.getElementById('review-rating').value,
+                    comment: commentArea.value,
+                    media: mediaUrls // Sử dụng danh sách ảnh thật vừa upload
+                };
+
+                // 3. GỬI LÊN SERVER (MONGODB)
+                try {
+                    const res = await fetch('/api/reviews', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reviewData)
+                    });
+                    const data = await res.json();
+                    
+                    if (!res.ok) throw new Error(data.message || "Lỗi server");
+
+                    window.showToast(data.message || "Đã đăng đánh giá thành công!", "fa-solid fa-check-double");
+                    
+                    // Xử lý cộng điểm nếu có ảnh
+                    if (mediaUrls.length > 0 && data.review) {
+                        if (!userData.rewardedProducts) userData.rewardedProducts = [];
+                        if (!userData.rewardedProducts.includes(productId)) {
+                            userData.points = (userData.points || 0) + 2;
+                            userData.rewardedProducts.push(productId);
+                            const updatedData = JSON.stringify(userData);
+                            localStorage.setItem('damoi_user', updatedData);
+                            sessionStorage.setItem('damoi_user', updatedData);
+                            
+                            setTimeout(() => {
+                                window.showToast("Bạn nhận được +2 điểm thưởng cho Ảnh & Video!", "fa-solid fa-gift");
+                            }, 1500);
+                        }
+                    }
+
+                    renderReviews(); 
+                    toggleReviewForm();
+                } catch (err) {
+                    console.error("Lỗi gửi review:", err);
+                    window.showToast("Lỗi: " + err.message, "fa-solid fa-triangle-exclamation");
+                }
+            });
+        }
+
+        // Hàm hiển thị danh sách đánh giá từ Server
+        async function renderReviews() {
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const reviewsContainer = document.getElementById('reviews-list');
+            if (!reviewsContainer || !productId) return;
+
+            try {
+                const res = await fetch(`/api/reviews/${productId}`);
+                if (!res.ok) throw new Error("Lỗi tải đánh giá");
+                const reviews = await res.json();
+
+                if (reviews.length === 0) {
+                    reviewsContainer.innerHTML = '<p style="font-style: italic; color: #888; padding: 20px 0;">Chưa có đánh giá nào. Hãy là người đầu tiên nhận xét!</p>';
+                    return;
+                }
+
+                reviewsContainer.innerHTML = reviews.map(r => `
+                    <div class="review-item" style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: #ffca28; font-size: 13px;">${r.userName}</strong>
+                            <span style="color: #666; font-size: 11px;">${new Date(r.createdAt).toLocaleDateString('vi-VN')}</span>
+                        </div>
+                        <div style="color: #ffca28; font-size: 10px; margin-bottom: 6px;">
+                            ${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}
+                        </div>
+                        <p style="color: #ccc; font-size: 13px; line-height: 1.5; font-style: italic;">${r.comment}</p>
+                        ${r.media && r.media.length > 0 ? `
+                            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                ${r.media.map(m => `<img src="${m}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #444;">`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error("Lỗi tải review:", err);
+            }
+        }
+
+        // Hàm kiểm tra bài đánh giá cũ để đổi tên nút
+        function checkExistingReview() {
+            const userStr = sessionStorage.getItem('damoi_user') || localStorage.getItem('damoi_user');
+            if (!userStr) return;
+
+            const userData = JSON.parse(userStr);
+            const productId = new URLSearchParams(window.location.search).get('id');
+            const userCode = '#' + String(userData._id || '00000000').slice(-8).toUpperCase();
+
+            const localReviews = JSON.parse(localStorage.getItem('damoi_local_reviews') || '[]');
+            const hasReviewed = localReviews.some(r => r.productId === productId && r.userCode === userCode);
+
+            const btn = document.querySelector('.write-review-btn');
+            if (btn && hasReviewed) {
+                btn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> CHỈNH SỬA ĐÁNH GIÁ';
+                
+                // Đổ sẵn dữ liệu cũ vào form nếu khách mở ra
+                const myReview = localReviews.find(r => r.productId === productId && r.userCode === userCode);
+                if (myReview) {
+                    document.getElementById('review-rating').value = myReview.rating;
+                    document.getElementById('review-comment').value = myReview.comment;
+                    document.getElementById('word-count').innerText = `${myReview.comment.trim().split(/\s+/).length}/200 từ`;
+                }
+            }
+        }
+
         // Initial check on load
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthForReview();
+            renderReviews();
+            checkExistingReview();
         });
 
-        document.getElementById('review-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = 'ĐANG GỬI...';
-            btn.disabled = true;
 
-            const name = document.getElementById('review-name').value;
-            const rating = document.getElementById('review-rating').value;
-            const comment = document.getElementById('review-comment').value;
-
-            fetch(`/api/products/${productId}/reviews`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ name, rating, comment })
-            }).then(res => res.json())
-              .then(data => {
-                  if(data.message === 'Đã thêm đánh giá') {
-                      alert('Cảm ơn bạn đã đánh giá!');
-                      window.location.reload(); 
-                  } else {
-                      alert('Lỗi: ' + data.message);
-                      btn.innerText = originalText;
-                      btn.disabled = false;
-                  }
-              }).catch(err => {
-                  alert('Lỗi mạng');
-                  btn.innerText = originalText;
-                  btn.disabled = false;
-              });
-        });
 
         function changeImage(src, element) {
             document.getElementById('featured-image').src = src;

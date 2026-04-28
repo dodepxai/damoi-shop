@@ -13,6 +13,11 @@
 
     // Gọi đếm số lượng khi vừa load xong mọi trang
     window.updateCartCount();
+    
+    // Đảm bảo cập nhật lại khi Header (chứa số lượng) đã tải xong qua AJAX
+    document.addEventListener('componentsLoaded', () => {
+        window.updateCartCount();
+    });
 
     // Tách riêng hàm attach sự kiện Add To Cart cho HomePage
     window.bindAddToCartEvents = () => {
@@ -52,29 +57,24 @@
 
                     localStorage.setItem('damoi_cart', JSON.stringify(window.cart));
                     window.updateCartCount();
-                    window.openCartDrawer(); // NGUY CƠ: Tự động mở Mini Cart khi bấm Thêm
+                    
+                    // Hiện thông báo Toast
+                    window.showToast(`Đã thêm vào giỏ hàng`);
                 }
 
-                // Hiệu ứng nút khi bấm (Animation cao cấp)
+                // Hiệu ứng nút khi bấm (Nổi bật hơn)
                 const originalContent = btn.innerHTML;
-                const originalBg = btn.style.background;
-                const originalColor = btn.style.color;
-
-                btn.innerHTML = '<i class="fa-solid fa-check" style="font-size: 20px;"></i>';
-                btn.style.background = '#e32124'; // Đổi sang nền đỏ khi đã thêm
-                btn.style.color = '#ffffff';
-
+                btn.classList.add('added');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                
                 if (cartCountElement) {
-                    cartCountElement.style.transform = 'scale(1.5)';
-                    setTimeout(() => {
-                        cartCountElement.style.transform = 'scale(1)';
-                    }, 200);
+                    cartCountElement.classList.add('bump');
+                    setTimeout(() => cartCountElement.classList.remove('bump'), 300);
                 }
 
                 setTimeout(() => {
+                    btn.classList.remove('added');
                     btn.innerHTML = originalContent;
-                    btn.style.background = originalBg;
-                    btn.style.color = originalColor;
                 }, 2000);
             });
         });

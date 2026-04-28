@@ -365,18 +365,16 @@ window.triggerFireworks = function() {
     }, 250);
 };
 
-window.sendRealOtpEmail = function(userEmail, otpCode) {
+window.sendRealOtpEmail = function(userEmail, otpCode, userName = null) {
     const serviceID = "service_ucgohhn";
     const templateID = "template_6nvmeng";
     const templateParams = {
         to_email: userEmail,
-        to_name: window.tempAuthData.name || "Khách hàng",
+        to_name: userName || (window.tempAuthData ? window.tempAuthData.name : "Khách hàng"),
         otp_code: otpCode,
         reply_to: "damoishop@gmail.com"
     };
-    emailjs.send(serviceID, templateID, templateParams)
-        .then(res => console.log('Email sent!'))
-        .catch(err => console.error('Email failed!', err));
+    return emailjs.send(serviceID, templateID, templateParams); // Trả về promise để frontend xử lý
 };
 
 window.focusNextOtp = function(elem, event) {
@@ -539,7 +537,7 @@ window.handleLogout = function() {
     }, 2500);
 };
 
-window.showToast = function(message) {
+window.showToast = function(message, iconClass = 'fa-solid fa-circle-check') {
     let container = document.querySelector('.damoi-toast-container');
     if (!container) {
         container = document.createElement('div');
@@ -550,7 +548,7 @@ window.showToast = function(message) {
     const toast = document.createElement('div');
     toast.className = 'damoi-toast';
     toast.innerHTML = `
-        <i class="fa-solid fa-heart" style="color: #002b5c;"></i>
+        <i class="${iconClass}" style="color: var(--accent-color); font-size: 18px;"></i>
         <span>${message}</span>
     `;
     
