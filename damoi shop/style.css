@@ -769,9 +769,9 @@ ul {
 }
 
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 20px !important;
 }
 
 .product-card {
@@ -2519,6 +2519,9 @@ footer {
 .layout-with-sidebar.no-sidebar .product-grid {
     max-width: 1400px;
     margin: 0 auto;
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 20px !important;
 }
 
 .filter-sidebar {
