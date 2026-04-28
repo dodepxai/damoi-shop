@@ -911,6 +911,17 @@ document.addEventListener('componentsLoaded', () => {
                 item.classList.remove('new-arrivals'); // Quét sạch màu mặc định bị ghim tĩnh trong HTML
             });
 
+            // --- LOGIC ẨN SIDEBAR CHO FINAL SALE ---
+            const mainContainer = document.querySelector('.layout-with-sidebar');
+            if (mainContainer) {
+                if (isSale === 'true') {
+                    mainContainer.classList.add('no-sidebar');
+                } else {
+                    mainContainer.classList.remove('no-sidebar');
+                }
+            }
+            // ------------------------------------
+
             if (category) {
                 const active = Array.from(navItems).find(n => n.href.includes(`category=${encodeURIComponent(category)}`) || n.href.includes(`category=${category}`));
                 if (active) active.classList.add('active-nav');

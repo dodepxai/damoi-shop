@@ -770,8 +770,8 @@ ul {
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
 }
 
 .product-card {
@@ -2505,6 +2505,20 @@ footer {
     .filter-sidebar {
         display: none;
     }
+}
+
+/* Class đặc biệt để ẩn sidebar và căn giữa sản phẩm (Dùng cho Final Sale) */
+.layout-with-sidebar.no-sidebar {
+    grid-template-columns: 1fr;
+}
+
+.layout-with-sidebar.no-sidebar .filter-sidebar {
+    display: none;
+}
+
+.layout-with-sidebar.no-sidebar .product-grid {
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .filter-sidebar {
